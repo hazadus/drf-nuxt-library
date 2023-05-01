@@ -49,8 +49,10 @@ class BookAdmin(admin.ModelAdmin):
     model = Book
     list_display = [
         "title",
-        "author",
+        "publisher",
         "user",
+        "year",
+        "created",
     ]
     readonly_fields = [
         "created",
@@ -88,6 +90,7 @@ class BookCardAdmin(admin.ModelAdmin):
         "user",
         "is_favorite",
         "want_to_read",
+        "is_reading",
         "is_read",
         "created",
     ]

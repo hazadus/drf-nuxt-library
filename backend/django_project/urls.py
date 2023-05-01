@@ -12,6 +12,8 @@ from django.utils.translation import gettext_lazy as _
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    # Local apps
+    path("api/v1/", include("books.urls")),
     # Djoser endpoints to manage users:
     path("api/v1/", include("djoser.urls")),
     path("api/v1/", include("djoser.urls.authtoken")),

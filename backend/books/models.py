@@ -71,6 +71,12 @@ class Author(models.Model):
         verbose_name=_("фамилия"),
         max_length=32,
     )
+    description = models.TextField(
+        verbose_name=_("об авторе"),
+        blank=True,
+        null=True,
+        default=None,
+    )
 
     class Meta:
         ordering = ["last_name"]
@@ -102,10 +108,9 @@ class Book(models.Model):
         on_delete=models.CASCADE,
         related_name="books_created",
     )
-    author = models.ForeignKey(
-        verbose_name=_("автор"),
+    authors = models.ManyToManyField(
+        verbose_name=_("авторы"),
         to=Author,
-        on_delete=models.CASCADE,
         related_name="books",
     )
     title = models.CharField(
@@ -126,6 +131,18 @@ class Book(models.Model):
         null=True,
         default=None,
     )
+    isbn = models.CharField(
+        verbose_name="ISBN",
+        max_length=13,
+        blank=True,
+        null=True,
+    )
+    description = models.TextField(
+        verbose_name=_("описание"),
+        blank=True,
+        null=True,
+        default=None,
+    )
     contents = models.TextField(
         verbose_name=_("содержание"),
         blank=True,
@@ -138,7 +155,7 @@ class Book(models.Model):
         related_name="books",
         blank=True,
     )
-    profile_image = models.ImageField(
+    cover_image = models.ImageField(
         verbose_name=_("обложка"),
         null=True,
         blank=True,
@@ -159,9 +176,8 @@ class Book(models.Model):
         verbose_name_plural = _("книги")
 
     def __str__(self):
-        return "{book}, {author}".format(
+        return "{book}".format(
             book=self.title,
-            author=self.author,
         )
 
 
@@ -220,6 +236,10 @@ class BookCard(models.Model):
     )
     want_to_read = models.BooleanField(
         verbose_name=_("хочу прочитать"),
+        default=False,
+    )
+    is_reading = models.BooleanField(
+        verbose_name=_("читаю сейчас"),
         default=False,
     )
     is_read = models.BooleanField(
