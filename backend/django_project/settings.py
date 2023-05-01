@@ -19,12 +19,24 @@ env.read_env()
 
 SECRET_KEY = env.str("SECRET_KEY")
 DEBUG = env.bool("DEBUG", False)
+FRONTEND_URL = env.str("FRONTEND_URL", "http://localhost:3000")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "0.0.0.0",
+    "127.0.0.1",
+]
 
+CORS_ALLOWED_ORIGINS = [
+    FRONTEND_URL,
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    FRONTEND_URL,
+]
 
 # Application definition
 
