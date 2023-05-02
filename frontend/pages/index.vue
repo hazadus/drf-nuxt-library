@@ -25,25 +25,25 @@ onBeforeMount(() => {
     Последние поступления
   </h2>
 
-  <div class="box" v-for="book in allBooks" :key="(book as Book).id">
+  <div class="box" v-for="book in allBooks" :key="book.id">
     <div class="columns">
       <div class="column is-10">
         <h3 class="header is-size-3">
-          <b>{{ (book as Book).title }}</b>
+          <b>{{ book.title }}</b>
         </h3>
         <h4 class="subtitle is-4">
-          <template v-for="author in (book as Book).authors">
+          <template v-for="author in book.authors">
             {{ author.first_name }} {{ author.last_name }}
           </template>
         </h4>
 
-        <NuxtLink :to="`/books/${(book as Book).id}/`" class="button is-small">
+        <NuxtLink :to="`/books/${book.id}/`" class="button is-small">
           Подробнее
         </NuxtLink>
       </div>
       <div class="column is-2">
-        <figure v-if="(book as Book).cover_image" class="image is-2by3">
-          <img :src="`${config.public.apiBase}${(book as Book).cover_image}`">
+        <figure v-if="book.cover_image" class="image is-2by3">
+          <img :src="`${config.public.apiBase}${book.cover_image}`">
         </figure>
       </div>
     </div>
