@@ -30,6 +30,10 @@ const showMobileMenu: Ref<boolean> = ref(false);
             @click="showMobileMenu = false">
             Все книги
           </NuxtLink>
+          <NuxtLink to="/add-book/" class="navbar-item" :class="route.path.startsWith('/add-') ? 'is-active' : ''"
+            @click="showMobileMenu = false">
+            Добавить
+          </NuxtLink>
           <NuxtLink to="/about/" class="navbar-item" :class="route.path === '/about/' ? 'is-active' : ''"
             @click="showMobileMenu = false">
             О проекте
