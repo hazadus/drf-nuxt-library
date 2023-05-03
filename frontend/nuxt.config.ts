@@ -9,6 +9,7 @@ export default defineNuxtConfig({
         "@vueuse/nuxt",
         "nuxt-icon",
         "@pinia/nuxt",
+        "@nuxt/content",
     ],
     ssr: false,
 })

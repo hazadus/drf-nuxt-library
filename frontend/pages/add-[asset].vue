@@ -64,7 +64,7 @@ if (!allowableAssets.includes(asset)) {
 
   <!-- Page content -->
   <!-- Add book -->
-  <AddAuthorForm v-if="asset === 'book'" />
+  <AddBookForm v-if="asset === 'book'" />
 
   <template v-else-if="asset === 'author'">
     <h3 class="header is-size-3">

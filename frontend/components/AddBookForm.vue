@@ -1,3 +1,8 @@
+<script setup lang="ts">
+const description: Ref<string> = ref("");
+const contents: Ref<string> = ref("");
+</script>
+
 <template>
   <h3 class="header is-size-3 mb-3">
     Добавить книгу
@@ -80,7 +85,7 @@
           <div class="control">
             <div class="file has-name">
               <label class="file-label">
-                <input class="file-input" ref="fileInputElement" type="file" name="profile-pic" accept="image/*">
+                <input class="file-input" ref="fileInputElement" type="file" name="cover-pic" accept="image/*">
                 <span class="file-cta">
                   <span class="file-icon">
                     <Icon name="mdi:file-upload-outline" />
@@ -100,16 +105,23 @@
     </div>
 
     <div class="field">
-      <label class="label">Содержание</label>
+      <label class="label">Описание</label>
       <div class="control">
-        <textarea class="textarea" placeholder="Произведения, включенные в издание"></textarea>
+        <textarea v-model="description" class="textarea" placeholder="Краткое описание издания"></textarea>
+      </div>
+      <div class="box mt-3" v-if="description.length">
+        <MarkdownStringRenderer :markdownString="description" />
       </div>
     </div>
 
     <div class="field">
-      <label class="label">Описание</label>
+      <label class="label">Содержание</label>
       <div class="control">
-        <textarea class="textarea" placeholder="Краткое описание издания"></textarea>
+        <textarea v-model="contents" class="textarea"
+          placeholder="Произведения или главы, включенные в издание"></textarea>
+      </div>
+      <div class="box mt-3" v-if="contents.length">
+        <MarkdownStringRenderer :markdownString="contents" />
       </div>
     </div>
 
