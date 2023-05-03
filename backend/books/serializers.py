@@ -1,3 +1,12 @@
+"""
+Module contains serializers for models from `bookmarks` app.
+
+Note about serializer naming:
+SomeDetailSerializer - maximum details, with all nested objects serialized.
+SomeListSerializer - concise serializer
+
+For simple models, only "detail" serializers are created.
+"""
 from rest_framework import serializers
 
 from .models import Tag, Publisher, Author, Book
@@ -31,6 +40,22 @@ class PublisherDetailSerializer(serializers.ModelSerializer):
         ]
 
 
+class AuthorListSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Author model - used for lists.
+    """
+
+    class Meta:
+        model = Author
+        fields = [
+            "id",
+            "first_name",
+            "middle_name",
+            "last_name",
+            "description",
+        ]
+
+
 class AuthorDetailSerializer(serializers.ModelSerializer):
     """
     Serializer for Author model - detailed.
@@ -50,6 +75,36 @@ class AuthorDetailSerializer(serializers.ModelSerializer):
 class BookListSerializer(serializers.ModelSerializer):
     """
     Serializer for Book model - for use in list view.
+    """
+
+    user = CustomUserMinimalSerializer(many=False)
+    authors = AuthorDetailSerializer(many=True)
+    publisher = PublisherDetailSerializer(many=False)
+    tags = TagDetailSerializer(many=True)
+
+    class Meta:
+        model = Book
+        fields = [
+            "id",
+            "user",
+            "authors",
+            "title",
+            "year",
+            "publisher",
+            "isbn",
+            "description",
+            "contents",
+            "tags",
+            "cover_image",
+            "file",
+            "created",
+            "updated",
+        ]
+
+
+class BookDetailSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Book model - for detailed view.
     """
 
     user = CustomUserMinimalSerializer(many=False)
