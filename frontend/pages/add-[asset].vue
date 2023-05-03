@@ -6,7 +6,7 @@ const allowableAssets = ["book", "author", "publisher", "tag",];
 if (!allowableAssets.includes(asset)) {
   throw createError({
     statusCode: 404,
-    statusMessage: "Указанный раздел не существует на странице 'Добавить материал'!"
+    message: "Указанный раздел не существует на странице 'Добавить материал'!"
   });
 }
 </script>

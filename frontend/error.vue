@@ -29,7 +29,7 @@ function onClearError() {
           <div class="columns is-vcentered">
             <div class="column is-8">
               <p class="title">
-                {{ props.error?.statusCode }}: {{ props.error?.statusMessage }}
+                {{ props.error?.statusCode }}: {{ props.error?.message }}
               </p>
               <p class="subtitle">
                 Извините, произошла ошибка.

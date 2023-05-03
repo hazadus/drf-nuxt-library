@@ -35,7 +35,20 @@ onBeforeMount(() => {
           <template v-for="author in book.authors">
             {{ author.first_name }} {{ author.last_name }}
           </template>
+
+          <span v-if="book.publisher" class="has-text-grey">
+            &middot;&nbsp;&laquo;{{ book.publisher.title }}&raquo;
+          </span>
+
+          <span v-if="book.year" class="has-text-grey">
+            &middot;&nbsp;{{ book.year }}
+          </span>
         </h4>
+
+        <BulmaTagList class="mb-3">
+          <BulmaTag :tag="tag" v-for="tag in book.tags">
+          </BulmaTag>
+        </BulmaTagList>
 
         <NuxtLink :to="`/books/${book.id}/`" class="button is-small">
           Подробнее
