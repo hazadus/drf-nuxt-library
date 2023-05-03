@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Book } from '@/types';
+import type { Book } from "@/types";
 
 const route = useRoute();
 const config = useRuntimeConfig();
@@ -68,18 +68,14 @@ book.value = bookData.value;
             <h5>
               Описание
             </h5>
-            <p>
-              {{ book.description }}
-            </p>
+            <MarkdownStringRenderer :markdownString="book.description" />
           </template>
 
           <template v-if="book.contents">
             <h5>
               Содержание
             </h5>
-            <p>
-              {{ book.contents }}
-            </p>
+            <MarkdownStringRenderer :markdownString="book.contents" />
           </template>
         </div>
 
