@@ -40,7 +40,7 @@ if (bookError.value?.statusCode === 404) {
     </h2>
     <h3 class="subtitle">
       <template v-for="(author, index) in book.authors">
-        {{ author.first_name }} {{ author.last_name }}<template v-if="index + 1 < book.authors.length">,</template>
+        {{ author.first_name }} {{ author.last_name }}<template v-if="index + 1 < book.authors.length">, </template>
       </template>
 
       <span v-if="book.publisher" class="has-text-grey">

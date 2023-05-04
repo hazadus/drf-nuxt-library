@@ -1,4 +1,7 @@
+from django.db.models import QuerySet, Q
 from django.http import Http404
+from rest_framework.generics import ListAPIView
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -7,19 +10,48 @@ from .serializers import BookListSerializer, BookDetailSerializer
 from .models import Book
 
 
-class BookListView(APIView):
+class StandardResultsSetPagination(PageNumberPagination):
+    """
+    Basic pagination class for Book list.
+    """
+
+    page_size = 10
+
+    def get_paginated_response(self, data):
+        return Response(
+            {
+                "count": self.page.paginator.count,
+                "next": self.get_next_link(),
+                "previous": self.get_previous_link(),
+                "page": self.page.number,
+                "total_pages": self.page.paginator.num_pages,
+                "results": data,
+            }
+        )
+
+
+class BookListView(ListAPIView):
     """
     List all available books.
     """
 
-    @staticmethod
-    def get(request: Request) -> Response:
+    queryset = Book.objects.all()
+    serializer_class = BookListSerializer
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self) -> QuerySet:
         """
-        Return all available books.
+        Filter QuerySet using passed GET parameter `query`.
         """
-        books = Book.objects.all()
-        serializer = BookListSerializer(books, many=True)
-        return Response(serializer.data)
+        queryset = Book.objects.all().filter()
+        query = self.request.query_params.get("query", "")
+
+        # NB: strange behavior (item duplication in the list) when filtering by
+        # `| Q(authors__last_name__icontains=query)`
+        if query:
+            queryset = queryset.filter(Q(title__icontains=query))
+
+        return queryset
 
 
 class BookDetailView(APIView):
