@@ -19,10 +19,11 @@ function useApi (query: Object | undefined = undefined) {
   return { get };
 }
 
-export async function fetchAllBooks(page: number = 1) {
+export async function fetchAllBooks(page: number = 1, query: string | undefined = undefined) {
   // Fetch paginated list of all Books from API endpoint.
   // This will return the first page of the list by default.
-  const { get } = useApi({ page: page, });
+  // Use `query` to filter list by a srting.
+  const { get } = useApi({ page: page, query: query, });
   return await get<ListPage<Book>>("/books/");
 }
 

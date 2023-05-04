@@ -1,3 +1,4 @@
+from django.db.models import QuerySet, Q
 from django.http import Http404
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
@@ -37,6 +38,20 @@ class BookListView(ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookListSerializer
     pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self) -> QuerySet:
+        """
+        Filter QuerySet using passed GET parameter `query`.
+        """
+        queryset = Book.objects.all().filter()
+        query = self.request.query_params.get("query", "")
+
+        # NB: strange behavior (item duplication in the list) when filtering by
+        # `| Q(authors__last_name__icontains=query)`
+        if query:
+            queryset = queryset.filter(Q(title__icontains=query))
+
+        return queryset
 
 
 class BookDetailView(APIView):
