@@ -1,19 +1,23 @@
 <script setup lang="ts">
-import type { Book } from '@/types';
+import type { Book, ListPage } from '@/types';
 import { fetchAllBooks, getMediaUrl } from "@/useApi";
 
-const allBooks: Ref<Book[] | null> = ref(null);
+const booksListPage: Ref<ListPage<Book> | null> = ref(null);
 const searchInputElement: Ref<HTMLInputElement | null> = ref(null);
 const searchQuery: Ref<String> = ref("");
 
+// Get first page of the book list
 const { data: booksData } = await fetchAllBooks();
-allBooks.value = booksData.value;
+booksListPage.value = booksData.value;
 
 onMounted(() => {
   searchInputElement.value?.focus();
 });
 
-
+async function onClickPageNumber(page: number) {
+  const { data: booksData } = await fetchAllBooks(page);
+  booksListPage.value = booksData.value;
+}
 </script>
 
 <template>
@@ -33,25 +37,27 @@ onMounted(() => {
     <div class="level-item has-text-centered">
       <div>
         <p class="heading">Всего книг</p>
-        <p class="title">3,456</p>
+        <p class="title">
+          {{ booksListPage?.count }}
+        </p>
       </div>
     </div>
     <div class="level-item has-text-centered">
       <div>
         <p class="heading">Найдено</p>
-        <p class="title">123</p>
+        <p class="title">?</p>
       </div>
     </div>
     <div class="level-item has-text-centered">
       <div>
         <p class="heading">Найдено в ваших книгах</p>
-        <p class="title">456</p>
+        <p class="title">?</p>
       </div>
     </div>
   </nav>
 
   <!-- Content -->
-  <div class="box" v-for="book in allBooks" :key="book.id">
+  <div class="box" v-for="book in booksListPage?.results" :key="book.id">
     <div class="columns">
       <div class="column is-10">
         <h3 class="header is-size-3">
@@ -87,4 +93,24 @@ onMounted(() => {
       </div>
     </div>
   </div>
+
+  <!-- Bottom pagination -->
+  <nav v-if="booksListPage" class="pagination" role="navigation" aria-label="pagination">
+    <a @click="onClickPageNumber(booksListPage.page - 1)" class="pagination-previous"
+      :class="booksListPage?.previous ? '' : 'is-disabled'">
+      Назад
+    </a>
+    <a @click="onClickPageNumber(booksListPage.page + 1)" class="pagination-next"
+      :class="booksListPage.next ? '' : 'is-disabled'">
+      Вперёд
+    </a>
+    <ul class="pagination-list">
+      <li v-for="pageNumber in booksListPage.total_pages">
+        <a @click="onClickPageNumber(pageNumber)" class="pagination-link"
+          :class="pageNumber == booksListPage.page ? 'is-current' : ''" aria-label="Goto page">
+          {{ pageNumber }}
+        </a>
+      </li>
+    </ul>
+  </nav>
 </template>
