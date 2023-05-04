@@ -1,13 +1,13 @@
 from django.db.models import QuerySet, Q
 from django.http import Http404
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import BookListSerializer, BookDetailSerializer
-from .models import Book
+from .serializers import BookListSerializer, BookDetailSerializer, PublisherDetailSerializer
+from .models import Book, Publisher
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -32,7 +32,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 
 class BookListView(ListAPIView):
     """
-    List all available books.
+    List all available books with pagination.
     """
 
     queryset = Book.objects.all()
@@ -82,3 +82,34 @@ class BookDetailView(APIView):
         )
         serializer = BookDetailSerializer(book)
         return Response(serializer.data)
+
+
+class PublisherListView(ListCreateAPIView):
+    """
+    List all available publishers.
+    Create new publisher.
+    """
+
+    queryset = Publisher.objects.all()
+    serializer_class = PublisherDetailSerializer
+
+    def get_queryset(self) -> QuerySet:
+        """
+        Filter QuerySet using passed GET parameter `query`.
+        """
+        queryset = Publisher.objects.all().filter()
+        query = self.request.query_params.get("query", "")
+
+        if query:
+            queryset = queryset.filter(title__icontains=query)
+
+        return queryset
+
+
+class PublisherDetailView(RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve / update / delete publisher detail view.
+    """
+
+    queryset = Publisher.objects.all()
+    serializer_class = PublisherDetailSerializer
