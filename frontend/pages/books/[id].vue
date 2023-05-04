@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import { getMediaUrl, fetchBook } from "@/useApi";
 import type { Book } from "@/types";
 
 const route = useRoute();
-const config = useRuntimeConfig();
 
 const book: Ref<Book | null> = ref(null);
 
-const { data: bookData, error: bookError } = await useFetch<Book>(() => `${config.public.apiBase}/api/v1/books/${route.params.id}/`, {});
+const { data: bookData, error: bookError } = await fetchBook(route.params.id as string);
 
 if (bookError.value?.statusCode === 404) {
   throw createError({
@@ -17,9 +17,9 @@ if (bookError.value?.statusCode === 404) {
 } else if (bookError.value) {
   console.log(bookError.value);
   console.log(bookError.value.statusCode);
+} else {
+  book.value = bookData.value;
 }
-
-book.value = bookData.value;
 </script>
 
 <template>
@@ -84,7 +84,7 @@ book.value = bookData.value;
       <div class="column is-2">
         <!-- Book cover -->
         <figure v-if="book.cover_image" class="image is-2by3">
-          <img :src="`${config.public.apiBase}${book.cover_image}`">
+          <img :src="getMediaUrl(book.cover_image)">
         </figure>
       </div>
     </div>
