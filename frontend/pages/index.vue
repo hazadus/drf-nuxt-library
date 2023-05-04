@@ -1,19 +1,11 @@
 <script setup lang="ts">
 import type { Book } from '@/types';
-
-const config = useRuntimeConfig();
+import { fetchAllBooks, getMediaUrl } from "@/useApi";
 
 const allBooks: Ref<Book[] | null> = ref(null);
 
-async function fetchAllBooks() {
-  const { data: books, error: booksError } = await useFetch<Book[]>(() => `${config.public.apiBase}/api/v1/books/`, {});
-
-  allBooks.value = books.value as Book[];
-}
-
-onBeforeMount(() => {
-  fetchAllBooks();
-});
+const { data: booksData } = await fetchAllBooks();
+allBooks.value = booksData.value;
 </script>
 
 <template>
@@ -56,7 +48,7 @@ onBeforeMount(() => {
       </div>
       <div class="column is-2">
         <figure v-if="book.cover_image" class="image is-2by3">
-          <img :src="`${config.public.apiBase}${book.cover_image}`">
+          <img :src="getMediaUrl(book.cover_image)">
         </figure>
       </div>
     </div>
