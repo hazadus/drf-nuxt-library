@@ -3,7 +3,7 @@ Module contains serializers for models from `bookmarks` app.
 
 Note about serializer naming:
 SomeDetailSerializer - maximum details, with all nested objects serialized.
-SomeListSerializer - concise serializer
+SomeListSerializer or SomeMinimalSerializer - concise serializer
 
 For simple models, only "detail" serializers are created.
 """
@@ -40,9 +40,9 @@ class PublisherDetailSerializer(serializers.ModelSerializer):
         ]
 
 
-class AuthorListSerializer(serializers.ModelSerializer):
+class AuthorMinimalSerializer(serializers.ModelSerializer):
     """
-    Serializer for Author model - used for lists.
+    Serializer for Author model - used for Book list.
     """
 
     class Meta:
@@ -52,7 +52,6 @@ class AuthorListSerializer(serializers.ModelSerializer):
             "first_name",
             "middle_name",
             "last_name",
-            "description",
         ]
 
 
@@ -61,14 +60,45 @@ class AuthorDetailSerializer(serializers.ModelSerializer):
     Serializer for Author model - detailed.
     """
 
+    user = CustomUserMinimalSerializer(many=False)
+
     class Meta:
         model = Author
         fields = [
             "id",
+            "user",
             "first_name",
             "middle_name",
             "last_name",
             "description",
+            "portrait",
+        ]
+
+    def to_representation(self, instance):
+        """
+        Deliver consistent relative URLs of author portrait images.
+        Issue: https://forum.djangoproject.com/t/drf-imagefield-serializes-entire-url-with-domain-name/6975
+        """
+        ret = super().to_representation(instance)
+        ret["portrait"] = instance.portrait.url if instance.portrait else ""
+        return ret
+
+
+class AuthorCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Author model - used to create new authors.
+    """
+
+    class Meta:
+        model = Author
+        fields = [
+            "id",
+            "user",
+            "first_name",
+            "middle_name",
+            "last_name",
+            "description",
+            "portrait",
         ]
 
 
@@ -78,7 +108,7 @@ class BookListSerializer(serializers.ModelSerializer):
     """
 
     user = CustomUserMinimalSerializer(many=False)
-    authors = AuthorDetailSerializer(many=True)
+    authors = AuthorMinimalSerializer(many=True)
     publisher = PublisherDetailSerializer(many=False)
     tags = TagDetailSerializer(many=True)
 
@@ -103,7 +133,7 @@ class BookListSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         """
-        Deliver consistent relative URLs of profile images.
+        Deliver consistent relative URLs of cover images.
         Issue: https://forum.djangoproject.com/t/drf-imagefield-serializes-entire-url-with-domain-name/6975
         """
         ret = super().to_representation(instance)
