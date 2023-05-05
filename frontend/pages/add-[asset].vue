@@ -72,11 +72,7 @@ if (!allowableAssets.includes(asset)) {
     </h3>
   </template>
 
-  <template v-else-if="asset === 'publisher'">
-    <h3 class="header is-size-3">
-      Добавить издательство
-    </h3>
-  </template>
+  <AddPublisherForm v-else-if="asset === 'publisher'" />
 
   <template v-else-if="asset === 'tag'">
     <h3 class="header is-size-3">
