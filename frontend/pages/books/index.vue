@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Book, ListPage } from '@/types';
-import { fetchAllBooks, getMediaUrl } from "@/useApi";
+import { fetchAllBooks } from "@/useApi";
 
 const booksListPage: Ref<ListPage<Book> | null> = ref(null);
 let totalBooksCount: number = 0;

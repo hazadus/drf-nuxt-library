@@ -25,6 +25,7 @@ class PublisherAdmin(admin.ModelAdmin):
     model = Publisher
     list_display = [
         "title",
+        "user",
     ]
 
 
@@ -37,6 +38,7 @@ class AuthorAdmin(admin.ModelAdmin):
     model = Author
     list_display = [
         "full_name",
+        "user",
     ]
 
 

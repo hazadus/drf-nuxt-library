@@ -12,7 +12,7 @@ class Tag(models.Model):
         verbose_name=_("пользователь"),
         to=get_user_model(),
         on_delete=models.CASCADE,
-        related_name="tags",
+        related_name="tags_created",
         blank=True,
         null=True,
         default=None,
@@ -36,6 +36,15 @@ class Publisher(models.Model):
     Represents book publisher.
     """
 
+    user = models.ForeignKey(
+        verbose_name=_("пользователь"),
+        to=get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="publishers_created",
+        blank=True,
+        null=True,
+        default=None,
+    )
     title = models.CharField(
         verbose_name=_("название"),
         max_length=128,
@@ -55,6 +64,15 @@ class Author(models.Model):
     Represents book author.
     """
 
+    user = models.ForeignKey(
+        verbose_name=_("пользователь"),
+        to=get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="authors_created",
+        blank=True,
+        null=True,
+        default=None,
+    )
     first_name = models.CharField(
         verbose_name=_("имя"),
         max_length=32,
@@ -76,6 +94,12 @@ class Author(models.Model):
         blank=True,
         null=True,
         default=None,
+    )
+    portrait = models.ImageField(
+        verbose_name=_("портрет"),
+        null=True,
+        blank=True,
+        upload_to="images/authors/",
     )
 
     class Meta:
@@ -107,6 +131,9 @@ class Book(models.Model):
         to=get_user_model(),
         on_delete=models.CASCADE,
         related_name="books_created",
+        blank=True,
+        null=True,
+        default=None,
     )
     authors = models.ManyToManyField(
         verbose_name=_("авторы"),
@@ -119,6 +146,11 @@ class Book(models.Model):
     )
     year = models.IntegerField(
         verbose_name=_("год издания"),
+        null=True,
+        blank=True,
+    )
+    pages = models.IntegerField(
+        verbose_name=_("количество страниц"),
         null=True,
         blank=True,
     )
