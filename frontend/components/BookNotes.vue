@@ -29,7 +29,7 @@
           </span>
         </button>
 
-        <button class="button is-primary is-loading">Loading</button>
+        <button v-if="false" class="button is-primary is-loading">Loading</button>
       </div>
     </nav>
   </div>

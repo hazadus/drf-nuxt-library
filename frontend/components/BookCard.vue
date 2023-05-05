@@ -23,7 +23,7 @@
 
       <!-- Right side -->
       <div class="level-right">
-        <button class="button">
+        <button v-if="false" class="button">
           <span class="icon">
             <Icon name="mdi:book-plus" />
           </span>
@@ -41,7 +41,7 @@
           </span>
         </button>
 
-        <button class="button is-primary is-loading">Loading</button>
+        <button v-if="false" class="button is-primary is-loading">Loading</button>
       </div>
     </nav>
 
