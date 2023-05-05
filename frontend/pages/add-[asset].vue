@@ -62,17 +62,9 @@ if (!allowableAssets.includes(asset)) {
     </ul>
   </div>
 
-  <!-- Page content -->
-  <!-- Add book -->
+  <!-- Tab content -->
   <AddBookForm v-if="asset === 'book'" />
-
   <AddAuthorForm v-else-if="asset === 'author'" />
-
   <AddPublisherForm v-else-if="asset === 'publisher'" />
-
-  <template v-else-if="asset === 'tag'">
-    <h3 class="header is-size-3">
-      Добавить метку
-    </h3>
-  </template>
+  <AddTagForm v-else-if="asset === 'tag'" />
 </template>
