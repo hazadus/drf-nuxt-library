@@ -1,13 +1,24 @@
 from django.db.models import QuerySet, Q
 from django.http import Http404
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView
+from rest_framework.generics import (
+    ListAPIView,
+    RetrieveUpdateDestroyAPIView,
+    ListCreateAPIView,
+    CreateAPIView,
+)
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import BookListSerializer, BookDetailSerializer, PublisherDetailSerializer
-from .models import Book, Publisher
+from .serializers import (
+    BookListSerializer,
+    BookDetailSerializer,
+    PublisherDetailSerializer,
+    AuthorDetailSerializer,
+    AuthorCreateSerializer,
+)
+from .models import Author, Book, Publisher
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -86,7 +97,7 @@ class BookDetailView(APIView):
 
 class PublisherListView(ListCreateAPIView):
     """
-    List all available publishers.
+    List all available publishers (not paginated).
     Create new publisher.
     """
 
@@ -95,9 +106,9 @@ class PublisherListView(ListCreateAPIView):
 
     def get_queryset(self) -> QuerySet:
         """
-        Filter QuerySet using passed GET parameter `query`.
+        Filter QuerySet by `title` using passed GET parameter `query`.
         """
-        queryset = Publisher.objects.all().filter()
+        queryset = Publisher.objects.all()
         query = self.request.query_params.get("query", "")
 
         if query:
@@ -113,3 +124,42 @@ class PublisherDetailView(RetrieveUpdateDestroyAPIView):
 
     queryset = Publisher.objects.all()
     serializer_class = PublisherDetailSerializer
+
+
+class AuthorListView(ListAPIView):
+    """
+    List all available authors (not paginated).
+    """
+
+    queryset = Author.objects.all()
+    serializer_class = AuthorDetailSerializer
+
+    def get_queryset(self) -> QuerySet:
+        """
+        Filter QuerySet by `last_name` using passed GET parameter `query`.
+        """
+        queryset = Author.objects.all()
+        query = self.request.query_params.get("query", "")
+
+        if query:
+            queryset = queryset.filter(last_name__icontains=query)
+
+        return queryset
+
+
+class AuthorCreateView(CreateAPIView):
+    """
+    Create new author.
+    """
+
+    queryset = Author.objects.all()
+    serializer_class = AuthorCreateSerializer
+
+
+class AuthorDetailView(RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve / update / delete author detail view.
+    """
+
+    queryset = Author.objects.all()
+    serializer_class = AuthorDetailSerializer
