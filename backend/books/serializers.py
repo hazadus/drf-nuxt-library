@@ -101,6 +101,15 @@ class AuthorCreateSerializer(serializers.ModelSerializer):
             "portrait",
         ]
 
+    def to_representation(self, instance):
+        """
+        Deliver consistent relative URLs of author portrait images.
+        Issue: https://forum.djangoproject.com/t/drf-imagefield-serializes-entire-url-with-domain-name/6975
+        """
+        ret = super().to_representation(instance)
+        ret["portrait"] = instance.portrait.url if instance.portrait else ""
+        return ret
+
 
 class BookListSerializer(serializers.ModelSerializer):
     """

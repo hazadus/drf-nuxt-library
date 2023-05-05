@@ -2,7 +2,7 @@
 * This module contains API abstraction functions.
 */
 import { useFetch } from "nuxt/app";
-import type { Book, ID, ListPage, Publisher } from '@/types';
+import type { Book, ID, ListPage, Publisher, Author } from '@/types';
 
 export function getMediaUrl(relativeLink: string) {
   // Build full URL to media file from relative link returned by API in FileField's (e.g. Book.cover_image or User.profile_image).
@@ -58,4 +58,17 @@ export async function createNewPublisher(title: string) {
   formData.append("title", title);
   const { get } = useApi(undefined, "POST", formData);
   return await get<Publisher>("/publishers/");
+}
+
+export async function fetchAllAuthors(query: string | undefined = undefined) {
+  // Fetch full list of all authors, without pagination from API endpoint
+  // Use `query` to filter list by a string by author's last name.
+  const { get } = useApi({ query: query, });
+  return await get<Author[]>("/authors/");
+}
+
+export async function createNewAuthor(formData: FormData) {
+  // Create new Author.
+  const { get } = useApi(undefined, "POST", formData);
+  return await get<Author>("/authors/create/");
 }
