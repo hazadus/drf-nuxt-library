@@ -3,11 +3,25 @@
     Добро пожаловать! | Библиотека
   </Title>
 
-  <h2 class="header is-size-2 mb-5">
-    Добро пожаловать!
-  </h2>
+  <section class="hero is-medium is-info">
+    <div class="hero-body">
+      <div class="columns is-vcentered">
+        <div class="column is-7">
+          <p class="title">
+            Добро пожаловать в библиотеку!
+          </p>
+          <p class="subtitle">
+            Добавляйте книги, составляйте списки, пишите заметки &mdash; читать книги ещё никогда не было так
+            увлекательно!
+          </p>
+        </div>
 
-  <p>
-    Главная страница - разместить инфо о сайте. Недавно добавленные книги. Статистика, и т.п.
-  </p>
+        <div class="column is-5">
+          <figure class="image">
+            <img src="/images/matrixlibrary.jpg">
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
 </template>

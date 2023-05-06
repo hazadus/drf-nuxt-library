@@ -13,7 +13,7 @@ export function getMediaUrl(relativeLink: string) {
 function useApi (
   query: Object | undefined = undefined,
   method: string = "GET",
-  formData: FormData | undefined = undefined
+  formData: FormData | Object | undefined = undefined
   ) {
   const config = useRuntimeConfig();
 
@@ -42,6 +42,36 @@ export async function fetchAllBooks(page: number = 1, query: string | undefined 
 export async function fetchBook(bookId: ID | string) {
   // Fetch individual Book data by it's ID from API endpoint
   const { get } = useApi();
+  return await get<Book>(`/books/${bookId}/`);
+}
+
+export async function createNewBook(book: Book) {
+  // Create new Book.
+  let authorIds: number[] = [];
+
+  // Convert array of `Authors` to array of ids for backend.
+  book.authors.forEach((a) => authorIds.push(a.id));
+
+  const formData = {
+    title: book.title,
+    authors: authorIds,
+    publisher: book.publisher?.id,  // pass only ID, not object!
+    year: book.year,
+    pages: book.pages,
+    description: book.description,
+    contents: book.contents,
+  }
+
+  const { get } = useApi(undefined, "POST", formData);
+  return await get<Book>("/books/create/");
+}
+
+export async function updateBookCover(bookId: number, coverImage: File) {
+  // Update existing Book (with id = bookId) using PATCH method, uploading `coverImage` as cover.
+  const formData = new FormData();
+  formData.append("cover_image", coverImage);
+
+  const { get } = useApi(undefined, "PATCH", formData);
   return await get<Book>(`/books/${bookId}/`);
 }
 

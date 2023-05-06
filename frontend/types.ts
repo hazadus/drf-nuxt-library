@@ -27,7 +27,7 @@ export interface Publisher {
 
 export interface Author {
   id: ID;
-  first_name: string;
+  first_name?: string;
   middle_name?: string;
   last_name: string;
   description?: string;
@@ -35,20 +35,21 @@ export interface Author {
 }
 
 export interface Book {
-  id: ID;
-  user: User;
+  id?: ID;
+  user?: User;
   authors: Author[];
   title: string;
-  year: number;
-  publisher: Publisher;
-  isbn: string;
-  description: string;
-  contents: string;
-  tags: Tag[];
-  cover_image: string;
-  file: string;
-  created: Date;
-  updated: Date;
+  publisher?: Publisher;
+  year?: number;
+  pages?: number;
+  isbn?: string;
+  description?: string;
+  contents?: string;
+  tags?: Tag[];
+  cover_image?: string;
+  file?: string;
+  created?: Date;
+  updated?: Date;
 }
 
 export interface ListPage<T> {

@@ -1,5 +1,4 @@
 from django.db.models import QuerySet, Q
-from django.http import Http404
 from rest_framework.generics import (
     ListAPIView,
     RetrieveUpdateDestroyAPIView,
@@ -7,13 +6,12 @@ from rest_framework.generics import (
     CreateAPIView,
 )
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from .serializers import (
     BookListSerializer,
     BookDetailSerializer,
+    BookCreateSerializer,
     PublisherDetailSerializer,
     AuthorDetailSerializer,
     AuthorCreateSerializer,
@@ -65,34 +63,22 @@ class BookListView(ListAPIView):
         return queryset
 
 
-class BookDetailView(APIView):
+class BookDetailView(RetrieveUpdateDestroyAPIView):
     """
-    Return detailed Book info.
+    Retrieve / update / delete Book detail view.
     """
 
-    @staticmethod
-    def get_object(book_pk: int) -> Book:
-        """
-        Return Book instance.
-        """
-        book = Book.objects.filter(
-            pk=book_pk,
-        )
+    queryset = Book.objects.all()
+    serializer_class = BookDetailSerializer
 
-        if book:
-            return book.first()
 
-        raise Http404
+class BookCreateView(CreateAPIView):
+    """
+    Create new book.
+    """
 
-    def get(self, request: Request, book_pk: int) -> Response:
-        """
-        Return detailed Book info by it's id.
-        """
-        book = self.get_object(
-            book_pk=book_pk,
-        )
-        serializer = BookDetailSerializer(book)
-        return Response(serializer.data)
+    queryset = Book.objects.all()
+    serializer_class = BookCreateSerializer
 
 
 class PublisherListView(ListCreateAPIView):

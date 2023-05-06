@@ -61,6 +61,11 @@ async function onSubmit() {
   formData.append("last_name", lastName.value);
   formData.append("description", description.value);
 
+  if (fileInputElement.value?.files?.length) {
+    const image = fileInputElement.value.files.item(0) as File;
+    formData.append("portrait", image);
+  }
+
   const { data: addedAuthor, error: postError } = await createNewAuthor(formData);
 
   if (postError.value) {
@@ -192,7 +197,8 @@ existingAuthors.value = fetchedAuthors.value || [];
 
     <div class="field is-grouped">
       <div class="control">
-        <button @click.prevent="onSubmit" :disabled="isSubmitDisabled" class="button is-link">
+        <button @click.prevent="onSubmit" :disabled="isSubmitDisabled" class="button is-link"
+          :class="isPosting ? 'is-loading' : ''">
           Добавить автора
         </button>
       </div>
@@ -204,7 +210,7 @@ existingAuthors.value = fetchedAuthors.value || [];
     </div>
   </form>
 
-  <BulmaNotification v-if="createdAuthors.length" type="light" class="mt-3">
+  <BulmaNotification v-if="createdAuthors.length" type="success" class="mt-3">
     <div class="content">
       <p>
         <b>Вы добавили авторов:</b>
@@ -228,8 +234,10 @@ existingAuthors.value = fetchedAuthors.value || [];
         </div>
       </article>
 
-      <p>
-        Спасибо за участие в развитии проекта!
+      <p class="mt-5">
+        <b>
+          Спасибо за участие в развитии проекта!
+        </b>
       </p>
     </div>
   </BulmaNotification>

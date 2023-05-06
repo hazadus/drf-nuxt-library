@@ -23,7 +23,7 @@ const similarPublishers = computed(() => {
 });
 
 const isSubmitDisabled = computed(() => {
-  return similarPublishers.value.length || newPublisherTitle.value.trim().length < 4 || isPosting.value ? true : false;
+  return similarPublishers.value.length || newPublisherTitle.value.trim().length < 3 || isPosting.value ? true : false;
 });
 
 onMounted(() => {
@@ -84,25 +84,26 @@ existingPublishers.value = fetchedPublishers.value || [];
 
     <div class="field is-grouped">
       <div class="control">
-        <button :disabled="isSubmitDisabled" @click.prevent="onSubmit" class="button is-link">
+        <button :disabled="isSubmitDisabled" @click.prevent="onSubmit" class="button is-link"
+          :class="isPosting ? 'is-loading' : ''">
           Добавить издательство
         </button>
       </div>
       <div class="control">
-        <button @click.prevent="newPublisherTitle = ''" class="button is-link is-light">
+        <button @click.prevent="newPublisherTitle = ''" :disabled="isPosting" class="button is-link is-light">
           Очистить форму
         </button>
       </div>
     </div>
   </form>
 
-  <BulmaNotification v-if="createdPublishers.length" type="primary" class="mt-3">
+  <BulmaNotification v-if="createdPublishers.length" type="success" class="mt-3">
     <div class="content">
       <p>
         <b>Вы добавили издательства:</b>
       </p>
       <ul>
-        <li v-for="publisher in createdPublishers" :key="`created-publisher-${publisher.id}`">
+        <li v-for=" publisher  in  createdPublishers " :key="`created-publisher-${publisher.id}`">
           {{ publisher.title }}
         </li>
       </ul>

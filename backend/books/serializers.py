@@ -128,8 +128,9 @@ class BookListSerializer(serializers.ModelSerializer):
             "user",
             "authors",
             "title",
-            "year",
             "publisher",
+            "year",
+            "pages",
             "isbn",
             "description",
             "contents",
@@ -167,8 +168,9 @@ class BookDetailSerializer(serializers.ModelSerializer):
             "user",
             "authors",
             "title",
-            "year",
             "publisher",
+            "year",
+            "pages",
             "isbn",
             "description",
             "contents",
@@ -179,6 +181,15 @@ class BookDetailSerializer(serializers.ModelSerializer):
             "updated",
         ]
 
+    def to_representation(self, instance):
+        """
+        Deliver consistent relative URLs of cover images.
+        Issue: https://forum.djangoproject.com/t/drf-imagefield-serializes-entire-url-with-domain-name/6975
+        """
+        ret = super().to_representation(instance)
+        ret["cover_image"] = instance.cover_image.url if instance.cover_image else ""
+        return ret
+
 
 class BookCreateSerializer(serializers.ModelSerializer):
     """
@@ -188,13 +199,19 @@ class BookCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = [
+            "id",
             "user",
             "authors",
             "title",
-            "year",
             "publisher",
+            "year",
+            "pages",
+            "isbn",
+            "description",
             "contents",
             "tags",
             "cover_image",
             "file",
+            "created",
+            "updated",
         ]
