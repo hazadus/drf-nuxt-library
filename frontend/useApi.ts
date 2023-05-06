@@ -66,6 +66,15 @@ export async function createNewBook(book: Book) {
   return await get<Book>("/books/create/");
 }
 
+export async function updateBookCover(bookId: number, coverImage: File) {
+  // Update existing Book (with id = bookId) using PATCH method, uploading `coverImage` as cover.
+  const formData = new FormData();
+  formData.append("cover_image", coverImage);
+
+  const { get } = useApi(undefined, "PATCH", formData);
+  return await get<Book>(`/books/${bookId}/`);
+}
+
 export async function fetchAllPublishers(query: string | undefined = undefined) {
   // Fetch full list of all publishers, without pagination from API endpoint
   // Use `query` to filter list by a string.

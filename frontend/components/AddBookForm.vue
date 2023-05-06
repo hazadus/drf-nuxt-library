@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { Book, ListPage, Author, Publisher } from "@/types";
-import { fetchAllBooks, fetchAllAuthors, fetchAllPublishers, createNewBook } from "@/useApi";
-
-const config = useRuntimeConfig();
+import { fetchAllBooks, fetchAllAuthors, fetchAllPublishers, createNewBook, updateBookCover } from "@/useApi";
 
 const availableAuthors: Ref<Author[]> = ref([]);
 const availablePublishers: Ref<Publisher[]> = ref([]);
@@ -103,18 +101,11 @@ async function onSubmit() {
     return;
   }
 
-  // Book created - now upload the cover image
-  if (fileInputElement.value?.files?.length) {
-    // TODO: refactor to separate function in `apiBase`.
-    // TODO: handle errors.
+  // Book created - now upload the cover image:
+  if (fileInputElement.value?.files?.length && addedBook.value) {
     const image = fileInputElement.value.files.item(0) as File;
-    const formData = new FormData();
-    formData.append("cover_image", image);
-
-    const { data: patchedBook, error: patchError } = await useFetch(() => `${config.public.apiBase}/api/v1/books/${addedBook.value?.id}/`, {
-      method: "PATCH",
-      body: formData,
-    });
+    const { error: updateError } = await updateBookCover(addedBook.value.id as number, image);
+    if (updateError.value) fetchErrors.value.push(updateError.value.data);
   }
 
   if (addedBook.value) createdBooks.value.push(addedBook.value);
@@ -163,8 +154,8 @@ if (fetchedPublishers.value) availablePublishers.value = fetchedPublishers.value
         Название книги
       </label>
       <div class="control">
-        <input v-model="title" ref="titleInputElement" @keyup.escape="title = ''" class="input" type="text"
-          placeholder="Название книги">
+        <input v-model="title" ref="titleInputElement" @keyup.escape="title = ''" :disabled="isPosting" class="input"
+          type="text" placeholder="Название книги">
       </div>
     </div>
 
@@ -241,7 +232,7 @@ if (fetchedPublishers.value) availablePublishers.value = fetchedPublishers.value
             Год издания
           </label>
           <div class="control">
-            <input v-model="year" class="input" type="number" placeholder="Год">
+            <input v-model="year" :disabled="isPosting" class="input" type="number" placeholder="Год">
           </div>
         </div>
       </div>
@@ -252,7 +243,7 @@ if (fetchedPublishers.value) availablePublishers.value = fetchedPublishers.value
             Страниц
           </label>
           <div class="control">
-            <input v-model="pages" class="input" type="number" placeholder="Страниц">
+            <input v-model="pages" :disabled="isPosting" class="input" type="number" placeholder="Страниц">
           </div>
         </div>
       </div>
@@ -265,7 +256,8 @@ if (fetchedPublishers.value) availablePublishers.value = fetchedPublishers.value
           <div class="control">
             <div class="file has-name">
               <label class="file-label">
-                <input @change="onSelectFile" class="file-input" ref="fileInputElement" type="file" accept="image/*">
+                <input @change="onSelectFile" :disabled="isPosting" class="file-input" ref="fileInputElement" type="file"
+                  accept="image/*">
                 <span class="file-cta">
                   <span class="file-icon">
                     <Icon name="mdi:file-upload-outline" />
@@ -287,7 +279,8 @@ if (fetchedPublishers.value) availablePublishers.value = fetchedPublishers.value
     <div class="field">
       <label class="label">Описание</label>
       <div class="control">
-        <textarea v-model="description" class="textarea" placeholder="Краткое описание издания"></textarea>
+        <textarea v-model="description" :disabled="isPosting" class="textarea"
+          placeholder="Краткое описание издания"></textarea>
       </div>
       <div class="box mt-3" v-if="description.length">
         <MarkdownStringRenderer :markdownString="description" />
@@ -297,7 +290,7 @@ if (fetchedPublishers.value) availablePublishers.value = fetchedPublishers.value
     <div class="field">
       <label class="label">Содержание</label>
       <div class="control">
-        <textarea v-model="contents" class="textarea"
+        <textarea v-model="contents" :disabled="isPosting" class="textarea"
           placeholder="Произведения или главы, включенные в издание"></textarea>
       </div>
       <div class="box mt-3" v-if="contents.length">
@@ -328,12 +321,13 @@ if (fetchedPublishers.value) availablePublishers.value = fetchedPublishers.value
 
     <div class="field is-grouped">
       <div class="control">
-        <button @click.prevent="onSubmit" :disabled="isSubmitDisabled" class="button is-link">
+        <button @click.prevent="onSubmit" :disabled="isSubmitDisabled" class="button is-link"
+          :class="isPosting ? 'is-loading' : ''">
           Добавить книгу
         </button>
       </div>
       <div class="control">
-        <button @click.prevent="clearForm" class="button is-link is-light">
+        <button @click.prevent="clearForm" :disabled="isPosting" class="button is-link is-light">
           Очистить форму
         </button>
       </div>

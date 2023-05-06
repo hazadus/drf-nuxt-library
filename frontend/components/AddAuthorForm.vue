@@ -197,7 +197,8 @@ existingAuthors.value = fetchedAuthors.value || [];
 
     <div class="field is-grouped">
       <div class="control">
-        <button @click.prevent="onSubmit" :disabled="isSubmitDisabled" class="button is-link">
+        <button @click.prevent="onSubmit" :disabled="isSubmitDisabled" class="button is-link"
+          :class="isPosting ? 'is-loading' : ''">
           Добавить автора
         </button>
       </div>

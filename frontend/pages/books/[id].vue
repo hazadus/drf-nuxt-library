@@ -50,6 +50,10 @@ if (bookError.value?.statusCode === 404) {
       <span v-if="book.year" class="has-text-grey">
         &middot;&nbsp;{{ book.year }}
       </span>
+
+      <span v-if="book.pages" class="has-text-grey">
+        &middot;&nbsp;{{ book.pages }} с.
+      </span>
     </h3>
 
     <div class="columns">
