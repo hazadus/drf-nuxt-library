@@ -45,6 +45,13 @@ export async function fetchBook(bookId: ID | string) {
   return await get<Book>(`/books/${bookId}/`);
 }
 
+export async function createNewBook(formData: FormData) {
+  // Create new Book.
+  // TODO: accept `Book` as an argument and create FormData here!
+  const { get } = useApi(undefined, "POST", formData);
+  return await get<Book>("/books/create/");
+}
+
 export async function fetchAllPublishers(query: string | undefined = undefined) {
   // Fetch full list of all publishers, without pagination from API endpoint
   // Use `query` to filter list by a string.

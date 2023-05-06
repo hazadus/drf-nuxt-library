@@ -92,7 +92,8 @@ async function fetchBookListPageNumber(page: number) {
   <BookListItem v-if="booksListPage?.results.length" v-for="book in booksListPage?.results" :book="book"
     :key="`book-${book.id}`" />
   <BulmaNotification v-else>
-    Не найдено книг, соответствующих вашему запросу.
+    <p>Не найдено книг, соответствующих вашему запросу.</p>
+    <p>Вы можете <NuxtLink to="/add-book/">добавить новую книгу</NuxtLink> самостоятельно!</p>
   </BulmaNotification>
 
 
