@@ -233,8 +233,10 @@ existingAuthors.value = fetchedAuthors.value || [];
         </div>
       </article>
 
-      <p>
-        Спасибо за участие в развитии проекта!
+      <p class="mt-5">
+        <b>
+          Спасибо за участие в развитии проекта!
+        </b>
       </p>
     </div>
   </BulmaNotification>

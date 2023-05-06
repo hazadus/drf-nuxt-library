@@ -2,6 +2,8 @@
 import { Book, ListPage, Author, Publisher } from "@/types";
 import { fetchAllBooks, fetchAllAuthors, fetchAllPublishers, createNewBook } from "@/useApi";
 
+const config = useRuntimeConfig();
+
 const availableAuthors: Ref<Author[]> = ref([]);
 const availablePublishers: Ref<Publisher[]> = ref([]);
 
@@ -70,12 +72,6 @@ async function onSubmit() {
   let authors = [];
   authors.push(selectedAuthorID.value);
 
-  let image: File | undefined = undefined;
-
-  if (fileInputElement.value?.files?.length) {
-    image = fileInputElement.value.files.item(0) as File;
-  }
-
   const formData = {
     title: title.value,
     authors: authors,
@@ -84,20 +80,32 @@ async function onSubmit() {
     pages: pages.value,
     description: description.value,
     contents: contents.value,
-    // Upload the image, somehow, too...
   };
 
   const { data: addedBook, error: postError } = await createNewBook(formData);
 
   if (postError.value) {
     fetchErrors.value.push(postError.value.data);
+    isPosting.value = false;
+    return;
   }
 
-  if (addedBook.value) {
-    createdBooks.value.push(addedBook.value);
-    clearForm();
+  // Book created - now upload the cover image
+  if (fileInputElement.value?.files?.length) {
+    // TODO: refactor to separate function in `apiBase`.
+    // TODO: handle errors.
+    const image = fileInputElement.value.files.item(0) as File;
+    const formData = new FormData();
+    formData.append("cover_image", image);
+
+    const { data: patchedBook, error: patchError } = await useFetch(() => `${config.public.apiBase}/api/v1/books/${addedBook.value?.id}/`, {
+      method: "PATCH",
+      body: formData,
+    });
   }
 
+  if (addedBook.value) createdBooks.value.push(addedBook.value);
+  clearForm();
   isPosting.value = false;
 }
 

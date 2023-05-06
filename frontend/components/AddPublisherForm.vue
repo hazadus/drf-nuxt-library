@@ -23,7 +23,7 @@ const similarPublishers = computed(() => {
 });
 
 const isSubmitDisabled = computed(() => {
-  return similarPublishers.value.length || newPublisherTitle.value.trim().length < 4 || isPosting.value ? true : false;
+  return similarPublishers.value.length || newPublisherTitle.value.trim().length < 3 || isPosting.value ? true : false;
 });
 
 onMounted(() => {
@@ -96,7 +96,7 @@ existingPublishers.value = fetchedPublishers.value || [];
     </div>
   </form>
 
-  <BulmaNotification v-if="createdPublishers.length" type="primary" class="mt-3">
+  <BulmaNotification v-if="createdPublishers.length" type="success" class="mt-3">
     <div class="content">
       <p>
         <b>Вы добавили издательства:</b>
