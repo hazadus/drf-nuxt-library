@@ -45,9 +45,23 @@ export async function fetchBook(bookId: ID | string) {
   return await get<Book>(`/books/${bookId}/`);
 }
 
-export async function createNewBook(formData: Object) {
+export async function createNewBook(book: Book) {
   // Create new Book.
-  // TODO: accept `Book` as an argument and create FormData here!
+  let authorIds: number[] = [];
+
+  // Convert array of `Authors` to array of ids for backend.
+  book.authors.forEach((a) => authorIds.push(a.id));
+
+  const formData = {
+    title: book.title,
+    authors: authorIds,
+    publisher: book.publisher?.id,  // pass only ID, not object!
+    year: book.year,
+    pages: book.pages,
+    description: book.description,
+    contents: book.contents,
+  }
+
   const { get } = useApi(undefined, "POST", formData);
   return await get<Book>("/books/create/");
 }

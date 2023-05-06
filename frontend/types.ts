@@ -27,7 +27,7 @@ export interface Publisher {
 
 export interface Author {
   id: ID;
-  first_name: string;
+  first_name?: string;
   middle_name?: string;
   last_name: string;
   description?: string;

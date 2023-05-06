@@ -35,6 +35,22 @@ const isSubmitDisabled = computed(() => {
   return title.value.trim().length < 3 || selectedAuthorID.value == 0 || isPosting.value ? true : false;
 });
 
+const selectedAuthors = computed(() => {
+  if (selectedAuthorID.value) {
+    return availableAuthors.value.filter((a) => a.id == selectedAuthorID.value);
+  } else {
+    return [];
+  }
+});
+
+const selectedPublisher = computed(() => {
+  if (selectedPublisherID.value) {
+    return availablePublishers.value.filter((p) => p.id == selectedPublisherID.value)[0];
+  } else {
+    return undefined;
+  }
+});
+
 watch(title, async () => {
   // Query books by title as user enter new book's title
   const titleTrimmed = title.value.trim();
@@ -69,20 +85,17 @@ async function onSubmit() {
   isPosting.value = true;
   fetchErrors.value = [];
 
-  let authors = [];
-  authors.push(selectedAuthorID.value);
-
-  const formData = {
+  const newBook: Book = {
     title: title.value,
-    authors: authors,
-    publisher: selectedPublisherID.value || undefined,
+    authors: selectedAuthors.value,
+    publisher: selectedPublisher.value,
     year: year.value,
     pages: pages.value,
     description: description.value,
     contents: contents.value,
   };
 
-  const { data: addedBook, error: postError } = await createNewBook(formData);
+  const { data: addedBook, error: postError } = await createNewBook(newBook);
 
   if (postError.value) {
     fetchErrors.value.push(postError.value.data);
