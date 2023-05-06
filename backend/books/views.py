@@ -14,6 +14,7 @@ from rest_framework.views import APIView
 from .serializers import (
     BookListSerializer,
     BookDetailSerializer,
+    BookCreateSerializer,
     PublisherDetailSerializer,
     AuthorDetailSerializer,
     AuthorCreateSerializer,
@@ -93,6 +94,15 @@ class BookDetailView(APIView):
         )
         serializer = BookDetailSerializer(book)
         return Response(serializer.data)
+
+
+class BookCreateView(CreateAPIView):
+    """
+    Create new book.
+    """
+
+    queryset = Book.objects.all()
+    serializer_class = BookCreateSerializer
 
 
 class PublisherListView(ListCreateAPIView):
