@@ -197,6 +197,8 @@ class BookCreateSerializer(serializers.ModelSerializer):
             "publisher",
             "year",
             "pages",
+            "isbn",
+            "description",
             "contents",
             "tags",
             "cover_image",

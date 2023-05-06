@@ -13,7 +13,7 @@ export function getMediaUrl(relativeLink: string) {
 function useApi (
   query: Object | undefined = undefined,
   method: string = "GET",
-  formData: FormData | undefined = undefined
+  formData: FormData | Object | undefined = undefined
   ) {
   const config = useRuntimeConfig();
 
@@ -45,7 +45,7 @@ export async function fetchBook(bookId: ID | string) {
   return await get<Book>(`/books/${bookId}/`);
 }
 
-export async function createNewBook(formData: FormData) {
+export async function createNewBook(formData: Object) {
   // Create new Book.
   // TODO: accept `Book` as an argument and create FormData here!
   const { get } = useApi(undefined, "POST", formData);

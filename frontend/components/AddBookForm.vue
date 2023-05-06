@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Book, ListPage, Author, Publisher } from "@/types";
-import { fetchAllBooks, fetchAllAuthors, fetchAllPublishers } from "@/useApi";
+import { fetchAllBooks, fetchAllAuthors, fetchAllPublishers, createNewBook } from "@/useApi";
 
 const availableAuthors: Ref<Author[]> = ref([]);
 const availablePublishers: Ref<Publisher[]> = ref([]);
@@ -30,7 +30,7 @@ onMounted(() => {
 });
 
 const isSubmitDisabled = computed(() => {
-  return title.value.trim().length < 3 || selectedAuthorID.value == 0 || isPosting ? true : false;
+  return title.value.trim().length < 3 || selectedAuthorID.value == 0 || isPosting.value ? true : false;
 });
 
 watch(title, async () => {
@@ -67,15 +67,36 @@ async function onSubmit() {
   isPosting.value = true;
   fetchErrors.value = [];
 
-  const formData = new FormData();
-  formData.append("title", title.value);
-  // TODO: how to append numbers and lists?..
-  // https://developer.mozilla.org/en-US/docs/Web/API/FormData/append#examples
-  // https://developer.mozilla.org/en-US/docs/Web/API/Blob#creating_a_blob
-  // https://doka.guide/js/form-data/
-  // formData.append('user', JSON.stringify(body['user']));
-  //
-  // formData.append("year", year.value.toString());
+  let authors = [];
+  authors.push(selectedAuthorID.value);
+
+  let image: File | undefined = undefined;
+
+  if (fileInputElement.value?.files?.length) {
+    image = fileInputElement.value.files.item(0) as File;
+  }
+
+  const formData = {
+    title: title.value,
+    authors: authors,
+    publisher: selectedPublisherID.value || undefined,
+    year: year.value,
+    pages: pages.value,
+    description: description.value,
+    contents: contents.value,
+    // Upload the image, somehow, too...
+  };
+
+  const { data: addedBook, error: postError } = await createNewBook(formData);
+
+  if (postError.value) {
+    fetchErrors.value.push(postError.value.data);
+  }
+
+  if (addedBook.value) {
+    createdBooks.value.push(addedBook.value);
+    clearForm();
+  }
 
   isPosting.value = false;
 }
@@ -115,7 +136,7 @@ if (fetchedPublishers.value) availablePublishers.value = fetchedPublishers.value
     </div>
   </BulmaNotification>
 
-  <form>
+  <form enctype="multipart/form-data">
     <div class="field">
       <label class="label">
         Название книги
@@ -145,7 +166,7 @@ if (fetchedPublishers.value) availablePublishers.value = fetchedPublishers.value
             <span class="has-text-grey">
               &middot; {{ book.authors[0].first_name }} {{ book.authors[0].last_name }}
             </span>
-            <span class="has-text-grey">
+            <span v-if="book.publisher" class="has-text-grey">
               &middot; &laquo;{{ book.publisher.title }}&raquo;
             </span>
             <span v-if="book.year" class="has-text-grey">
@@ -298,7 +319,7 @@ if (fetchedPublishers.value) availablePublishers.value = fetchedPublishers.value
     </div>
   </form>
 
-  <BulmaNotification v-if="createdBooks.length" type="primary" class="mt-3">
+  <BulmaNotification v-if="createdBooks.length" type="success" class="mt-3">
     <div class="content">
       <p>
         <b>Вы добавили книги:</b>
@@ -308,12 +329,6 @@ if (fetchedPublishers.value) availablePublishers.value = fetchedPublishers.value
           <NuxtLink :to="`/books/${book.id}/`">
             {{ book.title }}
           </NuxtLink>
-          <span class="has-text-grey">
-            &middot; {{ book.authors[0].first_name }} {{ book.authors[0].last_name }}
-          </span>
-          <span class="has-text-grey">
-            &middot; &laquo;{{ book.publisher.title }}&raquo;
-          </span>
           <span v-if="book.year" class="has-text-grey">
             &middot; {{ book.year }}
           </span>
