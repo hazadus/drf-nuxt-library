@@ -2,7 +2,7 @@
 * This module contains API abstraction functions.
 */
 import { useFetch } from "nuxt/app";
-import type { Book, ID, ListPage, Publisher, Author } from '@/types';
+import type { Book, ID, ListPage, Publisher, Author, User, AuthToken } from '@/types';
 
 export function getMediaUrl(relativeLink: string) {
   // Build full URL to media file from relative link returned by API in FileField's (e.g. Book.cover_image or User.profile_image).
@@ -13,17 +13,21 @@ export function getMediaUrl(relativeLink: string) {
 function useApi (
   query: Object | undefined = undefined,
   method: string = "GET",
-  formData: FormData | Object | undefined = undefined
+  token: string | undefined = undefined,
+  formData: FormData | Object | undefined = undefined,
   ) {
   const config = useRuntimeConfig();
 
   // Reference: https://nuxt.com/docs/api/composables/use-fetch
-  const get: typeof useFetch = (url, params) => {
+  const get: typeof useFetch = (url) => {
     return useFetch(url, {
       params: query,
       baseURL: config.public.apiBase + "/api/v1",
       key: url.toString(),
       method: method as any,
+      headers: token ? [
+        ["Authorization", "Token " + token,],
+      ] : undefined,
       body: formData,
     });
   };
@@ -62,7 +66,7 @@ export async function createNewBook(book: Book) {
     contents: book.contents,
   }
 
-  const { get } = useApi(undefined, "POST", formData);
+  const { get } = useApi(undefined, "POST", undefined, formData);
   return await get<Book>("/books/create/");
 }
 
@@ -71,7 +75,7 @@ export async function updateBookCover(bookId: number, coverImage: File) {
   const formData = new FormData();
   formData.append("cover_image", coverImage);
 
-  const { get } = useApi(undefined, "PATCH", formData);
+  const { get } = useApi(undefined, "PATCH", undefined, formData);
   return await get<Book>(`/books/${bookId}/`);
 }
 
@@ -86,7 +90,7 @@ export async function createNewPublisher(title: string) {
   // Create new Publisher named `title`.
   let formData = new FormData();
   formData.append("title", title);
-  const { get } = useApi(undefined, "POST", formData);
+  const { get } = useApi(undefined, "POST", undefined, formData);
   return await get<Publisher>("/publishers/");
 }
 
@@ -99,6 +103,22 @@ export async function fetchAllAuthors(query: string | undefined = undefined) {
 
 export async function createNewAuthor(formData: FormData) {
   // Create new Author.
-  const { get } = useApi(undefined, "POST", formData);
+  const { get } = useApi(undefined, "POST", undefined, formData);
   return await get<Author>("/authors/create/");
+}
+
+export async function logIn(username: string, password: string) {
+  // Get user auth token from Djoser endpoint.
+  const formData = {
+    username: username,
+    password: password,
+  };
+  const { get } = useApi(undefined, "POST", undefined, formData);
+  return await get<AuthToken>("/token/login/");
+}
+
+export async function fetchAuthenticatedUserDetails(token: string) {
+  // Get detailed user info for authenticated user
+  const { get } = useApi(undefined, "GET", token);
+  return await get<User>("/user/details/");
 }

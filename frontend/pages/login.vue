@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/AuthStore';
-import type { User } from "@/types";
+import { logIn, fetchAuthenticatedUserDetails } from "@/useApi";
+import { useAuthStore } from "@/stores/AuthStore";
+import type { User, AuthToken } from "@/types";
 
-const config = useRuntimeConfig();
 const authStore = useAuthStore();
 const router = useRouter();
 
@@ -13,22 +13,11 @@ const fetchErrors: Ref<Object[]> = ref([]);
 
 const isFetching: Ref<boolean> = ref(false);
 
-interface AuthToken {
-  auth_token: string;
-}
-
 async function submitForm() {
   fetchErrors.value = [];
   isFetching.value = true;
 
-  const formData = {
-    username: username.value,
-    password: password.value,
-  };
-
-  const { data: authData, error: loginError } = await useFetch(() => `${config.public.apiBase}/api/v1/token/login/`, {
-    method: "POST", body: formData,
-  });
+  const { data: authData, error: loginError } = await logIn(username.value, password.value);
 
   if (loginError.value) {
     fetchErrors.value.push(loginError.value.data);
@@ -36,14 +25,8 @@ async function submitForm() {
     return;
   }
 
-  const token = authData.value as AuthToken;
-
-  // Fetch user info
-  const { data: userData, error: userDataError } = await useFetch(() => `${config.public.apiBase}/api/v1/user/details/`, {
-    headers: [
-      ["Authorization", "Token " + token.auth_token,],
-    ]
-  });
+  const token: AuthToken = authData.value as AuthToken;
+  const { data: userData, error: userDataError } = await fetchAuthenticatedUserDetails(token.auth_token);
 
   if (userDataError.value) {
     fetchErrors.value.push(userDataError.value.data);
@@ -51,14 +34,11 @@ async function submitForm() {
     return;
   }
 
-  const user = userData.value as User;
-
-  // Save token and user info in store:
+  // Save token and user info in the store:
+  const user: User = userData.value as User;
   authStore.logIn(token.auth_token, user);
 
   isFetching.value = false;
-
-  // Forward user to the bookmark list
   router.push("/books/");
 }
 

@@ -60,3 +60,7 @@ export interface ListPage<T> {
   previous: string;     // API URL for previous page, or null
   results: T[];  // array of items on the current page
 }
+
+export interface AuthToken {
+  auth_token: string;
+}
