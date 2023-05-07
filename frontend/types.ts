@@ -53,10 +53,14 @@ export interface Book {
 }
 
 export interface ListPage<T> {
-  count: number;  // total count of items in the list 
-  page: number;   // number of current page
-  total_pages: number;  // total number of pages in the list
-  next: string;   // API URL for next page or null
-  previous: string;     // API URL for previous page, or null
-  results: T[];  // array of items on the current page
+  count: number; // total count of items in the list
+  page: number; // number of current page
+  total_pages: number; // total number of pages in the list
+  next: string; // API URL for next page or null
+  previous: string; // API URL for previous page, or null
+  results: T[]; // array of items on the current page
+}
+
+export interface AuthToken {
+  auth_token: string;
 }

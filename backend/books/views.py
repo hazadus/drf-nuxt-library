@@ -1,10 +1,12 @@
 from django.db.models import QuerySet, Q
+from rest_framework import authentication, permissions, status
 from rest_framework.generics import (
     ListAPIView,
     RetrieveUpdateDestroyAPIView,
     ListCreateAPIView,
     CreateAPIView,
 )
+from rest_framework.mixins import CreateModelMixin
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
@@ -39,6 +41,24 @@ class StandardResultsSetPagination(PageNumberPagination):
         )
 
 
+class CreateAsAuthenticatedUser(CreateModelMixin):
+    """
+    Mixin to set `user` field to authenticated user for Book / Author / Publisher / Tag
+    """
+
+    def create(self, request, *args, **kwargs):
+        """
+        Create new Book / Author / Publisher / Tag, setting `user` field to authenticated user.
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
+
+
 class BookListView(ListAPIView):
     """
     List all available books with pagination.
@@ -68,24 +88,34 @@ class BookDetailView(RetrieveUpdateDestroyAPIView):
     Retrieve / update / delete Book detail view.
     """
 
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
     queryset = Book.objects.all()
     serializer_class = BookDetailSerializer
 
 
-class BookCreateView(CreateAPIView):
+class BookCreateView(CreateAsAuthenticatedUser, CreateAPIView):
     """
     Create new book.
+    Set `user` field to authenticated user.
     """
+
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     queryset = Book.objects.all()
     serializer_class = BookCreateSerializer
 
 
-class PublisherListView(ListCreateAPIView):
+class PublisherListView(CreateAsAuthenticatedUser, ListCreateAPIView):
     """
     List all available publishers (not paginated).
-    Create new publisher.
+    Create new publisher. Set `user` field to authenticated user.
     """
+
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     queryset = Publisher.objects.all()
     serializer_class = PublisherDetailSerializer
@@ -107,6 +137,9 @@ class PublisherDetailView(RetrieveUpdateDestroyAPIView):
     """
     Retrieve / update / delete publisher detail view.
     """
+
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     queryset = Publisher.objects.all()
     serializer_class = PublisherDetailSerializer
@@ -133,10 +166,14 @@ class AuthorListView(ListAPIView):
         return queryset
 
 
-class AuthorCreateView(CreateAPIView):
+class AuthorCreateView(CreateAsAuthenticatedUser, CreateAPIView):
     """
     Create new author.
+    Set `user` field to authenticated user.
     """
+
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     queryset = Author.objects.all()
     serializer_class = AuthorCreateSerializer
@@ -146,6 +183,9 @@ class AuthorDetailView(RetrieveUpdateDestroyAPIView):
     """
     Retrieve / update / delete author detail view.
     """
+
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     queryset = Author.objects.all()
     serializer_class = AuthorDetailSerializer

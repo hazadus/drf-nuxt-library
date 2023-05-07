@@ -1,6 +1,13 @@
 <script setup lang="ts">
+import { useAuthStore } from "./stores/AuthStore";
+
+const authStore = useAuthStore();
 const config = useRuntimeConfig();
 console.log("Library app started. API base is " + config.public.apiBase);
+
+onBeforeMount(() => {
+  authStore.initializeStore();
+});
 </script>
 
 <template>
