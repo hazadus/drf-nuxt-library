@@ -2,6 +2,7 @@
  * This module contains API abstraction functions.
  */
 import { useFetch } from "nuxt/app";
+import { useAuthStore } from "@/stores/AuthStore";
 import type {
   Book,
   ID,
@@ -13,15 +14,20 @@ import type {
 } from "@/types";
 
 export function getMediaUrl(relativeLink: string) {
-  // Build full URL to media file from relative link returned by API in FileField's (e.g. Book.cover_image or User.profile_image).
+  // Build full URL to media file from relative link returned by API in FileField's
+  // (e.g. Book.cover_image or User.profile_image).
   const config = useRuntimeConfig();
   return `${config.public.apiBase}${relativeLink}`;
 }
 
+/************************************************************************************************************
+ *  Base API fetch function
+ *************************************************************************************************************/
+
 function useApi(
   query: Object | undefined = undefined,
   method: string = "GET",
-  token: string | undefined = undefined,
+  token: string | null = null,
   formData: FormData | Object | undefined = undefined,
 ) {
   const config = useRuntimeConfig();
@@ -40,6 +46,10 @@ function useApi(
 
   return { get };
 }
+
+/************************************************************************************************************
+ *  Books API
+ *************************************************************************************************************/
 
 export async function fetchAllBooks(
   page: number = 1,
@@ -60,6 +70,7 @@ export async function fetchBook(bookId: ID | string) {
 
 export async function createNewBook(book: Book) {
   // Create new Book.
+  const authStore = useAuthStore();
   let authorIds: number[] = [];
 
   // Convert array of `Authors` to array of ids for backend.
@@ -75,18 +86,23 @@ export async function createNewBook(book: Book) {
     contents: book.contents,
   };
 
-  const { get } = useApi(undefined, "POST", undefined, formData);
+  const { get } = useApi(undefined, "POST", authStore.token, formData);
   return await get<Book>("/books/create/");
 }
 
 export async function updateBookCover(bookId: number, coverImage: File) {
   // Update existing Book (with id = bookId) using PATCH method, uploading `coverImage` as cover.
+  const authStore = useAuthStore();
   const formData = new FormData();
   formData.append("cover_image", coverImage);
 
-  const { get } = useApi(undefined, "PATCH", undefined, formData);
+  const { get } = useApi(undefined, "PATCH", authStore.token, formData);
   return await get<Book>(`/books/${bookId}/`);
 }
+
+/************************************************************************************************************
+ *  Publishers API
+ *************************************************************************************************************/
 
 export async function fetchAllPublishers(
   query: string | undefined = undefined,
@@ -99,11 +115,16 @@ export async function fetchAllPublishers(
 
 export async function createNewPublisher(title: string) {
   // Create new Publisher named `title`.
+  const authStore = useAuthStore();
   let formData = new FormData();
   formData.append("title", title);
-  const { get } = useApi(undefined, "POST", undefined, formData);
+  const { get } = useApi(undefined, "POST", authStore.token, formData);
   return await get<Publisher>("/publishers/");
 }
+
+/************************************************************************************************************
+ *  Authors API
+ *************************************************************************************************************/
 
 export async function fetchAllAuthors(query: string | undefined = undefined) {
   // Fetch full list of all authors, without pagination from API endpoint
@@ -114,9 +135,14 @@ export async function fetchAllAuthors(query: string | undefined = undefined) {
 
 export async function createNewAuthor(formData: FormData) {
   // Create new Author.
-  const { get } = useApi(undefined, "POST", undefined, formData);
+  const authStore = useAuthStore();
+  const { get } = useApi(undefined, "POST", authStore.token, formData);
   return await get<Author>("/authors/create/");
 }
+
+/************************************************************************************************************
+ *  Login and User API
+ *************************************************************************************************************/
 
 export async function logIn(username: string, password: string) {
   // Get user auth token from Djoser endpoint.

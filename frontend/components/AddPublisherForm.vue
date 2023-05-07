@@ -4,6 +4,7 @@ import { fetchAllPublishers, createNewPublisher } from "@/useApi";
 
 const existingPublishers: Ref<Publisher[]> = ref([]);
 const createdPublishers: Ref<Publisher[]> = ref([]);
+const fetchErrors: Ref<Object[]> = ref([]);
 
 const titleInputElement: Ref<HTMLInputElement | null> = ref(null);
 const isPosting: Ref<boolean> = ref(false);
@@ -32,8 +33,13 @@ onMounted(() => {
 
 async function onSubmit() {
   isPosting.value = true;
+  fetchErrors.value = [];
 
-  const { data: addedPublisher } = await createNewPublisher(newPublisherTitle.value);
+  const { data: addedPublisher, error: postError } = await createNewPublisher(newPublisherTitle.value);
+
+  if (postError.value) {
+    fetchErrors.value.push(postError.value.data);
+  }
 
   if (addedPublisher.value) {
     createdPublishers.value.push(addedPublisher.value);
@@ -52,6 +58,26 @@ existingPublishers.value = fetchedPublishers.value || [];
   <h3 class="header is-size-3 mb-5">
     Добавить издательство
   </h3>
+
+  <BulmaNotification v-if="fetchErrors.length" type="danger">
+    <div class="content">
+      <div class="icon-text mb-3">
+        <span class="icon has-text-warning is-hidden-mobile">
+          <Icon name="mdi:exclamation" />
+        </span>
+        <span>
+          <b>При добавлении издательства произошла ошибка!</b>
+        </span>
+      </div>
+      <ul>
+        <template v-for="error in fetchErrors">
+          <li v-for="value, key in error">
+            {{ key }}: {{ value }}
+          </li>
+        </template>
+      </ul>
+    </div>
+  </BulmaNotification>
 
   <form>
     <div class="field">
