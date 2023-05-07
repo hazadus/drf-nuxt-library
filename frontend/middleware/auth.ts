@@ -7,6 +7,6 @@ export default defineNuxtRouteMiddleware((to, from) => {
   // Init the store, because middleware somehow called before the store is initialized in App.vue.
   authStore.initializeStore();
   if (!authStore.isAuthenticated) {
-    return navigateTo('/login/')
+    return navigateTo("/login/");
   }
 });

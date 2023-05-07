@@ -1,8 +1,16 @@
 /*
-* This module contains API abstraction functions.
-*/
+ * This module contains API abstraction functions.
+ */
 import { useFetch } from "nuxt/app";
-import type { Book, ID, ListPage, Publisher, Author, User, AuthToken } from '@/types';
+import type {
+  Book,
+  ID,
+  ListPage,
+  Publisher,
+  Author,
+  User,
+  AuthToken,
+} from "@/types";
 
 export function getMediaUrl(relativeLink: string) {
   // Build full URL to media file from relative link returned by API in FileField's (e.g. Book.cover_image or User.profile_image).
@@ -10,12 +18,12 @@ export function getMediaUrl(relativeLink: string) {
   return `${config.public.apiBase}${relativeLink}`;
 }
 
-function useApi (
+function useApi(
   query: Object | undefined = undefined,
   method: string = "GET",
   token: string | undefined = undefined,
   formData: FormData | Object | undefined = undefined,
-  ) {
+) {
   const config = useRuntimeConfig();
 
   // Reference: https://nuxt.com/docs/api/composables/use-fetch
@@ -25,9 +33,7 @@ function useApi (
       baseURL: config.public.apiBase + "/api/v1",
       key: url.toString(),
       method: method as any,
-      headers: token ? [
-        ["Authorization", "Token " + token,],
-      ] : undefined,
+      headers: token ? [["Authorization", "Token " + token]] : undefined,
       body: formData,
     });
   };
@@ -35,11 +41,14 @@ function useApi (
   return { get };
 }
 
-export async function fetchAllBooks(page: number = 1, query: string | undefined = undefined) {
+export async function fetchAllBooks(
+  page: number = 1,
+  query: string | undefined = undefined,
+) {
   // Fetch paginated list of all Books from API endpoint.
   // This will return the first page of the list by default.
   // Use `query` to filter list by a string.
-  const { get } = useApi({ page: page, query: query, });
+  const { get } = useApi({ page: page, query: query });
   return await get<ListPage<Book>>("/books/");
 }
 
@@ -59,12 +68,12 @@ export async function createNewBook(book: Book) {
   const formData = {
     title: book.title,
     authors: authorIds,
-    publisher: book.publisher?.id,  // pass only ID, not object!
+    publisher: book.publisher?.id, // pass only ID, not object!
     year: book.year,
     pages: book.pages,
     description: book.description,
     contents: book.contents,
-  }
+  };
 
   const { get } = useApi(undefined, "POST", undefined, formData);
   return await get<Book>("/books/create/");
@@ -79,10 +88,12 @@ export async function updateBookCover(bookId: number, coverImage: File) {
   return await get<Book>(`/books/${bookId}/`);
 }
 
-export async function fetchAllPublishers(query: string | undefined = undefined) {
+export async function fetchAllPublishers(
+  query: string | undefined = undefined,
+) {
   // Fetch full list of all publishers, without pagination from API endpoint
   // Use `query` to filter list by a string.
-  const { get } = useApi({ query: query, });
+  const { get } = useApi({ query: query });
   return await get<Publisher[]>("/publishers/");
 }
 
@@ -97,7 +108,7 @@ export async function createNewPublisher(title: string) {
 export async function fetchAllAuthors(query: string | undefined = undefined) {
   // Fetch full list of all authors, without pagination from API endpoint
   // Use `query` to filter list by a string by author's last name.
-  const { get } = useApi({ query: query, });
+  const { get } = useApi({ query: query });
   return await get<Author[]>("/authors/");
 }
 
