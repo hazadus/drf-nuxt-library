@@ -1,7 +1,6 @@
 ## 08.05.2023, Пн
 
 - 00:20 - Frontend: порефакторен код `login.vue`.
-- 00:30 - Frontend: добавлен auth middleware.
 
 ## 07.05.2023, Вс
 

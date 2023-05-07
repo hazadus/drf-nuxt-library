@@ -1,10 +1,5 @@
 <script setup lang="ts">
-definePageMeta({
-  middleware: "auth",
-});
-
 const route = useRoute();
-
 const asset: string = route.params.asset as string;
 const allowableAssets = ["book", "author", "publisher", "tag",];
 
