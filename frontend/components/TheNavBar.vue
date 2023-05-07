@@ -84,7 +84,7 @@ async function onClickLogOut() {
             </div>
             <!-- NB: `key` added to re-render menu (thus, hide dropdown) on each route change. -->
             <div class="navbar-dropdown is-right" :key="route.path">
-              <NuxtLink to="/books/" class="navbar-item" @click="showMobileMenu = false">
+              <NuxtLink to="/profile/" class="navbar-item" @click="showMobileMenu = false">
                 <span class="icon-text">
                   <span class="icon">
                     <Icon name="mdi:book-account" />
