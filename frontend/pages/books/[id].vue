@@ -63,9 +63,9 @@ if (bookError.value?.statusCode === 404) {
           </BulmaTag>
         </BulmaTagList>
 
-        <BookCard />
+        <BookCard v-if="false" />
 
-        <BookNotes />
+        <BookNotes v-if="false" />
 
         <div class="content">
           <template v-if="book.description">

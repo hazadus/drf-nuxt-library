@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   runtimeConfig: {
     public: {
-      apiBase: "http://127.0.0.1:8000",
+      apiBase: "http://localhost",
     },
   },
   modules: ["@vueuse/nuxt", "nuxt-icon", "@pinia/nuxt", "@nuxt/content"],

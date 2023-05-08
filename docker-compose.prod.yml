@@ -17,6 +17,8 @@ services:
       - "SECRET_KEY=django-insecure-..."
       - "DEBUG=True"
       - "FRONTEND_URL=http://localhost"
+    depends_on:
+      - db
   node:
       container_name: "library-node"
       build: ./frontend/
