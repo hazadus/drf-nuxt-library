@@ -7,3 +7,5 @@ media/
 .flake8
 db.sqlite3
 pyproject.toml
+.git
+.gitignore
