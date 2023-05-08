@@ -1,0 +1,9 @@
+.venv/
+htmlcov/
+__pycache__/
+media/
+.coverage
+.env
+.flake8
+db.sqlite3
+pyproject.toml
