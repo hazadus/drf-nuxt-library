@@ -16,36 +16,39 @@ export const useAuthStore = defineStore("AuthStore", {
   getters: {},
   actions: {
     initializeStore() {
-      if (localStorage.getItem("token")) {
-        this.token = localStorage.getItem("token");
+      if (localStorage.getItem("drf-nuxt-library-token")) {
+        this.token = localStorage.getItem("drf-nuxt-library-token");
         this.isAuthenticated = true;
       } else {
         this.token = null;
         this.isAuthenticated = false;
       }
 
-      const userInfo = localStorage.getItem("user");
+      const userInfo = localStorage.getItem("drf-nuxt-library-user");
       if (userInfo) {
         this.user = JSON.parse(userInfo);
       } else {
-        localStorage.setItem("user", JSON.stringify(this.user));
+        localStorage.setItem(
+          "drf-nuxt-library-user",
+          JSON.stringify(this.user),
+        );
       }
     },
     setUser(user: User | null) {
       this.user = user;
-      localStorage.setItem("user", JSON.stringify(this.user));
+      localStorage.setItem("drf-nuxt-library-user", JSON.stringify(this.user));
     },
     logIn(token: string, user: User) {
       this.token = token;
       this.isAuthenticated = true;
       this.setUser(user);
-      localStorage.setItem("token", this.token);
+      localStorage.setItem("drf-nuxt-library-token", this.token);
     },
     logOut() {
       this.token = "";
       this.isAuthenticated = false;
       this.setUser(null);
-      localStorage.setItem("token", this.token);
+      localStorage.setItem("drf-nuxt-library-token", this.token);
     },
   },
 });
