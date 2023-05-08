@@ -75,10 +75,13 @@ class BookListView(ListAPIView):
         queryset = Book.objects.all().filter()
         query = self.request.query_params.get("query", "")
 
-        # NB: strange behavior (item duplication in the list) when filtering by
-        # `| Q(authors__last_name__icontains=query)`
         if query:
-            queryset = queryset.filter(Q(title__icontains=query))
+            queryset = queryset.filter(
+                Q(title__icontains=query)
+                | Q(authors__last_name__icontains=query)
+                | Q(contents__icontains=query)
+                | Q(description__icontains=query)
+            ).distinct()
 
         return queryset
 
