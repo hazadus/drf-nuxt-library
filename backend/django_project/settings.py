@@ -20,6 +20,7 @@ env.read_env()
 SECRET_KEY = env.str("SECRET_KEY")
 DEBUG = env.bool("DEBUG", False)
 FRONTEND_URL = env.str("FRONTEND_URL", "http://localhost:3000")
+BACKEND_HOST = env.str("BACKEND_HOST", "library.hazadus.ru")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,6 +29,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "0.0.0.0",
     "127.0.0.1",
+    BACKEND_HOST,
 ]
 
 CORS_ALLOWED_ORIGINS = [
