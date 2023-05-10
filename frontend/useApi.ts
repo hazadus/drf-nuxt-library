@@ -90,11 +90,18 @@ export async function createNewBook(book: Book) {
   return await get<Book>("/books/create/");
 }
 
-export async function updateBookCover(bookId: number, coverImage: File) {
-  // Update existing Book (with id = bookId) using PATCH method, uploading `coverImage` as cover.
+export async function updateBookFiles(
+  bookId: number,
+  coverImage: File | undefined,
+  file: File | undefined,
+) {
+  // Update existing Book (with id = bookId) using PATCH method, uploading `coverImage` as cover,
+  // `file` as attached file.
   const authStore = useAuthStore();
   const formData = new FormData();
-  formData.append("cover_image", coverImage);
+
+  if (coverImage) formData.append("cover_image", coverImage);
+  if (file) formData.append("file", file);
 
   const { get } = useApi(undefined, "PATCH", authStore.token, formData);
   return await get<Book>(`/books/${bookId}/`);

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { Book, ListPage, Author, Publisher } from "@/types";
-import { fetchAllBooks, fetchAllAuthors, fetchAllPublishers, createNewBook, updateBookCover } from "@/useApi";
+import { fetchAllBooks, fetchAllAuthors, fetchAllPublishers, createNewBook, updateBookFiles } from "@/useApi";
+import { useAuthStore } from '@/stores/AuthStore';
+
+const authStore = useAuthStore();
 
 const availableAuthors: Ref<Author[]> = ref([]);
 const availablePublishers: Ref<Publisher[]> = ref([]);
@@ -10,8 +13,10 @@ const createdBooks: Ref<Book[]> = ref([]);
 const fetchErrors: Ref<Object[]> = ref([]);
 
 const titleInputElement: Ref<HTMLInputElement | null> = ref(null);
-const fileInputElement: Ref<HTMLInputElement | null> = ref(null);
-const selectedFileName: Ref<string | undefined> = ref(undefined);
+const coverFileInputElement: Ref<HTMLInputElement | null> = ref(null);
+const bookFileInputElement: Ref<HTMLInputElement | null> = ref(null);
+const selectedCoverFileName: Ref<string | undefined> = ref(undefined);
+const selectedBookFileName: Ref<string | undefined> = ref(undefined);
 
 const title: Ref<string> = ref("");
 const selectedAuthorID: Ref<number> = ref(0);
@@ -68,8 +73,12 @@ function clearForm() {
   contents.value = "";
 }
 
-function onSelectFile() {
-  selectedFileName.value = fileInputElement.value?.files?.item(0)?.name;
+function onSelectCoverFile() {
+  selectedCoverFileName.value = coverFileInputElement.value?.files?.item(0)?.name;
+}
+
+function onSelectBookFile() {
+  selectedBookFileName.value = bookFileInputElement.value?.files?.item(0)?.name;
 }
 
 async function fetchSimilarBooks() {
@@ -101,11 +110,23 @@ async function onSubmit() {
     return;
   }
 
-  // Book created - now upload the cover image:
-  if (fileInputElement.value?.files?.length && addedBook.value) {
-    const image = fileInputElement.value.files.item(0) as File;
-    const { error: updateError } = await updateBookCover(addedBook.value.id as number, image);
-    if (updateError.value) fetchErrors.value.push(updateError.value.data);
+  // Book created - now upload the files:
+  if (addedBook.value) {
+    let image: File | undefined = undefined;
+    let file: File | undefined = undefined;
+
+    if (coverFileInputElement.value?.files?.length) {
+      image = coverFileInputElement.value.files.item(0) as File;
+    }
+
+    if (bookFileInputElement.value?.files?.length) {
+      file = bookFileInputElement.value.files.item(0) as File;
+    }
+
+    if (image || file) {
+      const { error: updateError } = await updateBookFiles(addedBook.value.id as number, image, file);
+      if (updateError.value) fetchErrors.value.push(updateError.value.data);
+    }
   }
 
   if (addedBook.value) createdBooks.value.push(addedBook.value);
@@ -249,6 +270,12 @@ if (fetchedPublishers.value) availablePublishers.value = fetchedPublishers.value
       </div>
 
       <div class="column is-4">
+
+      </div>
+    </div>
+
+    <div class="columns">
+      <div class="column is-6">
         <div class="field">
           <label class="label">
             Обложка
@@ -256,18 +283,45 @@ if (fetchedPublishers.value) availablePublishers.value = fetchedPublishers.value
           <div class="control">
             <div class="file has-name">
               <label class="file-label">
-                <input @change="onSelectFile" :disabled="isPosting" class="file-input" ref="fileInputElement" type="file"
-                  accept="image/*">
+                <input @change="onSelectCoverFile" :disabled="isPosting" class="file-input" ref="coverFileInputElement"
+                  type="file" accept="image/*">
                 <span class="file-cta">
                   <span class="file-icon">
-                    <Icon name="mdi:file-upload-outline" />
+                    <Icon name="mdi:file-image" />
                   </span>
                   <span class="file-label">
-                    Выберите файл
+                    Выберите изображение
                   </span>
                 </span>
                 <span class="file-name">
-                  {{ selectedFileName }}
+                  {{ selectedCoverFileName }}
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="column is-6">
+        <div v-if="authStore.user?.is_staff" class="field">
+          <label class="label">
+            Файл книги
+          </label>
+          <div class="control">
+            <div class="file has-name">
+              <label class="file-label">
+                <input @change="onSelectBookFile" :disabled="isPosting" class="file-input" ref="bookFileInputElement"
+                  type="file">
+                <span class="file-cta">
+                  <span class="file-icon">
+                    <Icon name="mdi:file-pdf" />
+                  </span>
+                  <span class="file-label">
+                    Выберите файл книги
+                  </span>
+                </span>
+                <span class="file-name">
+                  {{ selectedBookFileName }}
                 </span>
               </label>
             </div>
