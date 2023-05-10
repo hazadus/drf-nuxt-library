@@ -62,7 +62,9 @@ async function fetchBookListPageNumber(page: number) {
   <nav class="level is-mobile">
     <div class="level-item has-text-centered">
       <div>
-        <p class="heading">Всего книг</p>
+        <p class="heading">
+          Всего книг
+        </p>
         <p class="title">
           {{ totalBooksCount }}
         </p>
@@ -78,12 +80,14 @@ async function fetchBookListPageNumber(page: number) {
         </p>
       </div>
     </div>
-    <div class="level-item has-text-centered">
+    <div v-if="false" class="level-item has-text-centered">
       <div>
         <p class="heading">
           Найдено в ваших книгах
         </p>
-        <p class="title">?</p>
+        <p class="title">
+          ?
+        </p>
       </div>
     </div>
   </nav>

@@ -3,6 +3,10 @@ const route = useRoute();
 const asset: string = route.params.asset as string;
 const allowableAssets = ["book", "author", "publisher", "tag",];
 
+definePageMeta({
+  middleware: "auth",
+});
+
 if (!allowableAssets.includes(asset)) {
   throw createError({
     statusCode: 404,

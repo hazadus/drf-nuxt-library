@@ -16,7 +16,8 @@ services:
     environment:
       - "SECRET_KEY=django-insecure-..."
       - "DEBUG=True"
-      - "FRONTEND_URL=http://localhost"
+      - "FRONTEND_URL=http://library.hazadus.ru"
+      - "BACKEND_HOST=http://library.hazadus.ru"
     depends_on:
       - db
   node:
@@ -24,7 +25,7 @@ services:
       build: ./frontend/
       command: node .output/server/index.mjs
       environment:
-        - "NUXT_PUBLIC_API_BASE=http://localhost"
+        - "NUXT_PUBLIC_API_BASE=http://library.hazadus.ru"
         - "NITRO_HOST=0.0.0.0"
         - "NITRO_PORT=3000"
   nginx:
