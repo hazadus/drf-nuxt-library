@@ -76,15 +76,14 @@ export async function createNewBook(book: Book) {
   // Convert array of `Authors` to array of ids for backend.
   book.authors.forEach((a) => authorIds.push(a.id));
 
-  const formData = {
-    title: book.title,
-    authors: authorIds,
-    publisher: book.publisher?.id, // pass only ID, not object!
-    year: book.year,
-    pages: book.pages,
-    description: book.description,
-    contents: book.contents,
-  };
+  const formData = new FormData();
+  formData.append("title", book.title);
+  formData.append("authors", JSON.stringify(authorIds));
+  formData.append("publisher", `${book.publisher?.id}`);
+  formData.append("year", `${book.year}`);
+  formData.append("pages", `${book.pages}`);
+  formData.append("description", book.description as string);
+  formData.append("contents", book.contents as string);
 
   const { get } = useApi(undefined, "POST", authStore.token, formData);
   return await get<Book>("/books/create/");
