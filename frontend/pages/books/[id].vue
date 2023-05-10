@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { getMediaUrl, fetchBook } from "@/useApi";
 import type { Book } from "@/types";
+import { useAuthStore } from '@/stores/AuthStore';
 
+const authStore = useAuthStore();
 const route = useRoute();
 
 const book: Ref<Book | null> = ref(null);
@@ -35,26 +37,37 @@ if (bookError.value?.statusCode === 404) {
   </BulmaNotification>
 
   <template v-else-if="book">
-    <h2 class="header is-size-2">
-      {{ book.title }}
-    </h2>
-    <h3 class="subtitle">
-      <template v-for="(author, index) in book.authors">
-        {{ author.first_name }} {{ author.last_name }}<template v-if="index + 1 < book.authors.length">, </template>
-      </template>
+    <div class="columns is-vcentered">
+      <div class="column is-10">
+        <h2 class="header is-size-2">
+          {{ book.title }}
+        </h2>
 
-      <span v-if="book.publisher" class="has-text-grey">
-        &middot;&nbsp;&laquo;{{ book.publisher.title }}&raquo;
-      </span>
+        <h3 class="subtitle">
+          <template v-for="(author, index) in book.authors">
+            {{ author.first_name }} {{ author.last_name }}<template v-if="index + 1 < book.authors.length">, </template>
+          </template>
 
-      <span v-if="book.year" class="has-text-grey">
-        &middot;&nbsp;{{ book.year }}
-      </span>
+          <span v-if="book.publisher" class="has-text-grey">
+            &middot;&nbsp;&laquo;{{ book.publisher.title }}&raquo;
+          </span>
 
-      <span v-if="book.pages" class="has-text-grey">
-        &middot;&nbsp;{{ book.pages }} с.
-      </span>
-    </h3>
+          <span v-if="book.year" class="has-text-grey">
+            &middot;&nbsp;{{ book.year }}
+          </span>
+
+          <span v-if="book.pages" class="has-text-grey">
+            &middot;&nbsp;{{ book.pages }} с.
+          </span>
+        </h3>
+      </div>
+
+      <div class="column is-2 has-text-centered">
+        <NuxtLink v-if="book.file && authStore.user?.is_staff" :to="getMediaUrl(book.file)" class="button is-success">
+          Читать
+        </NuxtLink>
+      </div>
+    </div>
 
     <div class="columns">
       <div class="column is-10">

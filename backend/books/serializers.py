@@ -143,11 +143,12 @@ class BookListSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         """
-        Deliver consistent relative URLs of cover images.
+        Deliver consistent relative URLs of cover images and attached file.
         Issue: https://forum.djangoproject.com/t/drf-imagefield-serializes-entire-url-with-domain-name/6975
         """
         ret = super().to_representation(instance)
         ret["cover_image"] = instance.cover_image.url if instance.cover_image else ""
+        ret["file"] = instance.file.url if instance.file else ""
         return ret
 
 
@@ -183,11 +184,12 @@ class BookDetailSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         """
-        Deliver consistent relative URLs of cover images.
+        Deliver consistent relative URLs of cover images and attached file.
         Issue: https://forum.djangoproject.com/t/drf-imagefield-serializes-entire-url-with-domain-name/6975
         """
         ret = super().to_representation(instance)
         ret["cover_image"] = instance.cover_image.url if instance.cover_image else ""
+        ret["file"] = instance.file.url if instance.file else ""
         return ret
 
 

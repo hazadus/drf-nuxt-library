@@ -4,6 +4,9 @@
 */
 import type { Book } from '@/types';
 import { getMediaUrl } from "@/useApi";
+import { useAuthStore } from '@/stores/AuthStore';
+
+const authStore = useAuthStore();
 
 defineProps({
   book: {
@@ -39,13 +42,21 @@ defineProps({
           </BulmaTag>
         </BulmaTagList>
 
+        <template v-if="book.file && authStore.user?.is_staff">
+          <NuxtLink :to="getMediaUrl(book.file)" class="button is-small mr-2">
+            Читать
+          </NuxtLink>
+        </template>
+
         <NuxtLink :to="`/books/${book.id}/`" class="button is-small">
           Подробнее
         </NuxtLink>
       </div>
       <div class="column is-2">
         <figure v-if="book.cover_image" class="image is-2by3">
-          <img :src="getMediaUrl(book.cover_image)">
+          <NuxtLink :to="`/books/${book.id}/`">
+            <img :src="getMediaUrl(book.cover_image)">
+          </NuxtLink>
         </figure>
       </div>
     </div>
