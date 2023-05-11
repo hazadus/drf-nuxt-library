@@ -48,13 +48,17 @@ defineProps({
           </NuxtLink>
         </template>
 
-        <NuxtLink :to="`/books/${book.id}/`" class="button is-small">
-          Подробнее
+        <NuxtLink :to="`/books/${book.id}/notes/`" class="button is-small mr-2">
+          Заметки
+        </NuxtLink>
+
+        <NuxtLink :to="`/books/${book.id}/details/`" class="button is-small">
+          Сведения
         </NuxtLink>
       </div>
       <div class="column is-2">
         <figure v-if="book.cover_image" class="image is-2by3">
-          <NuxtLink :to="`/books/${book.id}/`">
+          <NuxtLink :to="`/books/${book.id}/details/`">
             <img :src="getMediaUrl(book.cover_image)">
           </NuxtLink>
         </figure>

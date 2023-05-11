@@ -8,6 +8,17 @@ const route = useRoute();
 
 const book: Ref<Book | null> = ref(null);
 
+const tabName: string = route.params.tab as string;
+const allowableTabNames = ["details", "notes",];
+
+if (!allowableTabNames.includes(tabName)) {
+  throw createError({
+    statusCode: 404,
+    message: "Указанный раздел не существует на странице книги!",
+    fatal: true,
+  });
+}
+
 const { data: bookData, error: bookError } = await fetchBook(route.params.id as string);
 
 if (bookError.value?.statusCode === 404) {
@@ -37,7 +48,7 @@ if (bookError.value?.statusCode === 404) {
   </BulmaNotification>
 
   <template v-else-if="book">
-    <div class="columns is-vcentered">
+    <div class="columns is-vcentered mb-0">
       <div class="column is-10">
         <h2 class="header is-size-2">
           {{ book.title }}
@@ -53,7 +64,7 @@ if (bookError.value?.statusCode === 404) {
           </span>
 
           <span v-if="book.year" class="has-text-grey">
-            &middot;&nbsp;{{ book.year }}
+            &middot;&nbsp;{{ book.year }} г.
           </span>
 
           <span v-if="book.pages" class="has-text-grey">
@@ -71,52 +82,40 @@ if (bookError.value?.statusCode === 404) {
 
     <div class="columns">
       <div class="column is-10">
-        <BulmaTagList class="mb-3">
+        <BulmaTagList class="mb-0 p-0">
           <BulmaTag :tag="tag" v-for="tag in book.tags">
           </BulmaTag>
         </BulmaTagList>
 
-        <BookCard v-if="false" />
-
-        <BookNotes v-if="false" />
-
-        <div class="content">
-          <template v-if="book.description">
-            <h5>
-              Описание
-            </h5>
-            <MarkdownStringRenderer :markdownString="book.description" />
-          </template>
-
-          <template v-if="book.contents">
-            <h5>
-              Содержание
-            </h5>
-            <MarkdownStringRenderer :markdownString="book.contents" />
-          </template>
+        <!-- Tabs -->
+        <div class="tabs is-centered">
+          <ul>
+            <li :class="tabName === 'details' ? 'is-active' : ''">
+              <NuxtLink :to="`/books/${book.id}/details/`">
+                <span>
+                  <Icon name="mdi:book" />
+                </span>
+                <span>
+                  Сведения
+                </span>
+              </NuxtLink>
+            </li>
+            <li :class="tabName === 'notes' ? 'is-active' : ''">
+              <NuxtLink :to="`/books/${book.id}/notes/`">
+                <span>
+                  <Icon name="mdi:notes" />
+                </span>
+                <span>
+                  Заметки
+                </span>
+              </NuxtLink>
+            </li>
+          </ul>
         </div>
 
-        <template v-if="book.authors.length">
-          <template v-for="author in book.authors" :key="`author-${author.id}`">
-            <div class="box" v-if="author.description">
-              <div class="columns">
-                <div class="column is-10">
-                  <h5 class="header is-size-5 mb-3">
-                    {{ author.first_name }} {{ author.last_name }}
-                  </h5>
-
-                  <MarkdownStringRenderer :markdownString="author.description" />
-                </div>
-
-                <div class="column is-2">
-                  <figure v-if="author.portrait" class="image is-3by4">
-                    <img :src="getMediaUrl(author.portrait)">
-                  </figure>
-                </div>
-              </div>
-            </div>
-          </template>
-        </template>
+        <!-- Tab content -->
+        <BookDetailsTab v-if="tabName == 'details'" :book="book" />
+        <BookNotesTab v-else-if="tabName == 'notes'" />
 
       </div>
 
