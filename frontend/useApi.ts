@@ -159,6 +159,18 @@ export async function fetchNotes(bookId: number | undefined = undefined) {
   return await get<Note[]>("/notes/");
 }
 
+export async function createNewNote(bookId: number, text: string) {
+  // Create new Note for a book as authenticated user.
+  const authStore = useAuthStore();
+  const formData = {
+    user: authStore.user?.id as number,
+    book: bookId,
+    text: text,
+  };
+  const { get } = useApi(undefined, "POST", authStore.token, formData);
+  return await get<Note>("/notes/create/");
+}
+
 /************************************************************************************************************
  *  Login and User API
  *************************************************************************************************************/
