@@ -17,8 +17,9 @@ from .serializers import (
     PublisherDetailSerializer,
     AuthorDetailSerializer,
     AuthorCreateSerializer,
+    NoteDetailSerializer,
 )
-from .models import Author, Book, Publisher
+from .models import Author, Book, Publisher, Note
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -192,3 +193,28 @@ class AuthorDetailView(RetrieveUpdateDestroyAPIView):
 
     queryset = Author.objects.all()
     serializer_class = AuthorDetailSerializer
+
+
+class NoteListView(ListAPIView):
+    """
+    List all available Notes created by authorized user  (not paginated).
+    """
+
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    queryset = Note.objects.all()
+    serializer_class = NoteDetailSerializer
+
+    def get_queryset(self) -> QuerySet:
+        """
+        Filter QuerySet by authenticated user's id and GET parameter `book_id` (if present).
+        """
+        queryset = Note.objects.all().filter(user_id__exact=self.request.user.id)
+
+        book_id = self.request.query_params.get("book_id", "")
+
+        if book_id:
+            queryset = queryset.filter(book_id__exact=book_id)
+
+        return queryset

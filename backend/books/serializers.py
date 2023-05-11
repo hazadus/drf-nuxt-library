@@ -9,7 +9,7 @@ For simple models, only "detail" serializers are created.
 """
 from rest_framework import serializers
 
-from .models import Tag, Publisher, Author, Book
+from .models import Tag, Publisher, Author, Book, Note
 from users.serializers import CustomUserMinimalSerializer
 
 
@@ -37,6 +37,23 @@ class PublisherDetailSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "title",
+        ]
+
+
+class NoteDetailSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Note model - detailed.
+    """
+
+    class Meta:
+        model = Note
+        fields = [
+            "id",
+            "user",
+            "book",
+            "text",
+            "created",
+            "updated",
         ]
 
 
