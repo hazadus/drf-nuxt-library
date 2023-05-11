@@ -10,6 +10,8 @@ from .views import (
     AuthorDetailView,
     AuthorCreateView,
     NoteListView,
+    NoteCreateView,
+    NoteDetailView,
 )
 
 urlpatterns = [
@@ -22,4 +24,6 @@ urlpatterns = [
     path("publishers/", PublisherListView.as_view()),
     path("publishers/<int:pk>/", PublisherDetailView.as_view()),
     path("notes/", NoteListView.as_view()),
+    path("notes/create/", NoteCreateView.as_view()),
+    path("notes/<int:pk>/", NoteDetailView.as_view()),
 ]

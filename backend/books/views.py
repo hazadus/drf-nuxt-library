@@ -197,7 +197,7 @@ class AuthorDetailView(RetrieveUpdateDestroyAPIView):
 
 class NoteListView(ListAPIView):
     """
-    List all available Notes created by authorized user  (not paginated).
+    List all available Notes created by authorized user (not paginated).
     """
 
     authentication_classes = [authentication.TokenAuthentication]
@@ -218,3 +218,28 @@ class NoteListView(ListAPIView):
             queryset = queryset.filter(book_id__exact=book_id)
 
         return queryset
+
+
+class NoteCreateView(CreateAsAuthenticatedUser, CreateAPIView):
+    """
+    Create new Note.
+    Set `user` field to authenticated user.
+    """
+
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    queryset = Note.objects.all()
+    serializer_class = NoteDetailSerializer
+
+
+class NoteDetailView(RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve / update / delete Note view.
+    """
+
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    queryset = Note.objects.all()
+    serializer_class = NoteDetailSerializer
