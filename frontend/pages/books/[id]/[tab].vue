@@ -115,7 +115,7 @@ if (bookError.value?.statusCode === 404) {
 
         <!-- Tab content -->
         <BookDetailsTab v-if="tabName == 'details'" :book="book" />
-        <BookNotesTab v-else-if="tabName == 'notes'" />
+        <BookNotesTab v-else-if="tabName == 'notes'" :bookId="(book.id as number)" />
 
       </div>
 

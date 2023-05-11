@@ -48,7 +48,7 @@ defineProps({
           </NuxtLink>
         </template>
 
-        <NuxtLink :to="`/books/${book.id}/notes/`" class="button is-small mr-2">
+        <NuxtLink v-if="authStore.isAuthenticated" :to="`/books/${book.id}/notes/`" class="button is-small mr-2">
           Заметки
         </NuxtLink>
 

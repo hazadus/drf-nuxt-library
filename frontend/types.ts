@@ -52,6 +52,15 @@ export interface Book {
   updated?: Date;
 }
 
+export interface Note {
+  id?: ID;
+  user: ID;
+  book: ID;
+  text: string;
+  created: Date;
+  updated?: Date;
+}
+
 export interface ListPage<T> {
   count: number; // total count of items in the list
   page: number; // number of current page

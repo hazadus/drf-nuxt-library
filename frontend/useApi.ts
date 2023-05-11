@@ -9,6 +9,7 @@ import type {
   ListPage,
   Publisher,
   Author,
+  Note,
   User,
   AuthToken,
 } from "@/types";
@@ -145,6 +146,17 @@ export async function createNewAuthor(formData: FormData) {
   const authStore = useAuthStore();
   const { get } = useApi(undefined, "POST", authStore.token, formData);
   return await get<Author>("/authors/create/");
+}
+
+/************************************************************************************************************
+ *  Notes API
+ *************************************************************************************************************/
+
+export async function fetchNotes(bookId: number | undefined = undefined) {
+  // Get all notes (or notes for book with `bookId` only) created by authenticated user.
+  const authStore = useAuthStore();
+  const { get } = useApi({ book_id: bookId }, "GET", authStore.token);
+  return await get<Note[]>("/notes/");
 }
 
 /************************************************************************************************************
