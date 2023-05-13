@@ -112,6 +112,6 @@ fetchData();
 
     <hr v-if="notes.length">
 
-    <NoteBox :note="note" v-for="note in notes" @deleted="fetchData" :key="`note-${note.id}`" />
+    <NoteBox :note="note" v-for="note in notes" @updated="fetchData" @deleted="fetchData" :key="`note-${note.id}`" />
   </template>
 </template>
