@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { fetchNotes, createNewNote } from "@/useApi";
 import { useAuthStore } from '@/stores/AuthStore';
-import { useFormatDateTime } from "@/utils";
 import type { Note } from '@/types';
 
 const authStore = useAuthStore();
@@ -113,13 +112,6 @@ fetchData();
 
     <hr v-if="notes.length">
 
-    <div v-for="note in notes" :key="`note-${note.id}`" class="box">
-      <MarkdownStringRenderer :markdownString="note.text" />
-      <p class="has-text-grey has-text-right">
-        <small>
-          Заметка создана {{ useFormatDateTime(note.created) }}
-        </small>
-      </p>
-    </div>
+    <NoteBox :note="note" v-for="note in notes" @deleted="fetchData" :key="`note-${note.id}`" />
   </template>
 </template>

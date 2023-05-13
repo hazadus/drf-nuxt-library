@@ -171,6 +171,13 @@ export async function createNewNote(bookId: number, text: string) {
   return await get<Note>("/notes/create/");
 }
 
+export async function deleteNote(noteId: number) {
+  // Delete Note with `noteId`.
+  const authStore = useAuthStore();
+  const { get } = useApi(undefined, "DELETE", authStore.token);
+  return await get<Note>(`/notes/${noteId}/`);
+}
+
 /************************************************************************************************************
  *  Login and User API
  *************************************************************************************************************/
