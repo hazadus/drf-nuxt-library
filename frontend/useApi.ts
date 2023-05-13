@@ -171,6 +171,23 @@ export async function createNewNote(bookId: number, text: string) {
   return await get<Note>("/notes/create/");
 }
 
+export async function deleteNote(noteId: number) {
+  // Delete Note with `noteId`.
+  const authStore = useAuthStore();
+  const { get } = useApi(undefined, "DELETE", authStore.token);
+  return await get<Note>(`/notes/${noteId}/`);
+}
+
+export async function updateNote(noteId: number, text: string) {
+  // Update Note text using PATCH method.
+  const authStore = useAuthStore();
+  const formData = {
+    text: text,
+  };
+  const { get } = useApi(undefined, "PATCH", authStore.token, formData);
+  return await get<Note>(`/notes/${noteId}/`);
+}
+
 /************************************************************************************************************
  *  Login and User API
  *************************************************************************************************************/
