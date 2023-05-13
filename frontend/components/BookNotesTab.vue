@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { fetchNotes, createNewNote } from "@/useApi";
 import { useAuthStore } from '@/stores/AuthStore';
 import { useFormatDateTime } from "@/utils";
-import { fetchNotes, createNewNote } from "@/useApi";
 import type { Note } from '@/types';
 
 const authStore = useAuthStore();
@@ -16,6 +16,7 @@ const props = defineProps({
 const notes: Ref<Note[]> = ref([]);
 const newNoteText: Ref<string> = ref("");
 const isPosting: Ref<boolean> = ref(false);
+const fetchErrors: Ref<Object[]> = ref([]);
 
 const isSubmitDisabled = computed(() => {
   return isPosting.value || newNoteText.value.trim().length < 3 ? true : false;
@@ -28,7 +29,11 @@ function clearForm() {
 async function onSubmit() {
   isPosting.value = true;
 
-  const { data: newNoteData } = await createNewNote(props.bookId, newNoteText.value);
+  const { data: newNoteData, error: postError } = await createNewNote(props.bookId, newNoteText.value);
+
+  if (postError.value) {
+    fetchErrors.value.push(postError.value.data);
+  }
 
   if (newNoteData.value) {
     notes.value.unshift(newNoteData.value);
@@ -39,7 +44,11 @@ async function onSubmit() {
 }
 
 async function fetchData() {
-  const { data: notesData } = await fetchNotes(props.bookId);
+  const { data: notesData, error: fetchNotesError } = await fetchNotes(props.bookId);
+
+  if (fetchNotesError.value) {
+    fetchErrors.value.push(fetchNotesError.value.data);
+  }
 
   if (notesData.value) {
     notes.value = notesData.value;
@@ -50,6 +59,26 @@ fetchData();
 </script>
 
 <template>
+  <BulmaNotification v-if="fetchErrors.length" type="danger">
+    <div class="content">
+      <div class="icon-text mb-3">
+        <span class="icon has-text-warning is-hidden-mobile">
+          <Icon name="mdi:exclamation" />
+        </span>
+        <span>
+          <b>При обращении к серверу произошла ошибка!</b>
+        </span>
+      </div>
+      <ul>
+        <template v-for="error in fetchErrors">
+          <li v-for="value, key in error">
+            {{ key }}: {{ value }}
+          </li>
+        </template>
+      </ul>
+    </div>
+  </BulmaNotification>
+
   <BulmaNotification v-if="!authStore.isAuthenticated" type="warning">
     Войдите в учетную запись, чтобы создавать примечания к книгам.
   </BulmaNotification>
