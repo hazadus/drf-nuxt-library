@@ -9,7 +9,7 @@ For simple models, only "detail" serializers are created.
 """
 from rest_framework import serializers
 
-from .models import Tag, Publisher, Author, Book, Note
+from .models import Tag, Publisher, Author, Book, Note, List, ListItem
 from users.serializers import CustomUserMinimalSerializer
 
 
@@ -231,6 +231,46 @@ class BookCreateSerializer(serializers.ModelSerializer):
             "tags",
             "cover_image",
             "file",
+            "created",
+            "updated",
+        ]
+
+
+class ListItemDetailSerializer(serializers.ModelSerializer):
+    """
+    Detailed serializer for `ListItem`.
+    """
+
+    book = BookDetailSerializer(many=False)
+
+    class Meta:
+        model = ListItem
+        fields = [
+            "id",
+            "position",
+            "book",
+            "description",
+            "created",
+            "updated",
+        ]
+
+
+class ListListSerializer(serializers.ModelSerializer):
+    """
+    List serializer for user-created book `List`.
+    """
+
+    items = ListItemDetailSerializer(many=True)
+
+    class Meta:
+        model = List
+        fields = [
+            "id",
+            "user",
+            "title",
+            "description",
+            "is_public",
+            "items",
             "created",
             "updated",
         ]
