@@ -4,6 +4,7 @@ import type { Book } from "@/types";
 import { useAuthStore } from '@/stores/AuthStore';
 
 const authStore = useAuthStore();
+const config = useRuntimeConfig();
 const route = useRoute();
 
 const book: Ref<Book | null> = ref(null);
@@ -121,9 +122,13 @@ if (bookError.value?.statusCode === 404) {
 
       <div class="column is-2">
         <!-- Book cover -->
-        <figure v-if="book.cover_image" class="image is-2by3">
+        <figure v-if="book.cover_image" class="image is-2by3 mb-2">
           <img :src="getMediaUrl(book.cover_image)">
         </figure>
+
+        <!-- Links -->
+        <a v-if="authStore.user?.is_superuser" :href="`${config.public.apiBase}/admin/books/book/${book.id}/change/`"
+          target="_blank">См. в админке</a>
       </div>
     </div>
   </template>

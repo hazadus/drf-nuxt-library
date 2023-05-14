@@ -2,6 +2,8 @@
 import type { Book, ListPage } from '@/types';
 import { fetchAllBooks } from "@/useApi";
 
+const router = useRouter();
+
 const booksListPage: Ref<ListPage<Book> | null> = ref(null);
 let totalBooksCount: number = 0;
 
@@ -40,6 +42,12 @@ async function fetchBookListPageNumber(page: number) {
   booksListPage.value = booksData.value;
   isFetching.value = false;
 }
+
+function onPressEnter() {
+  if (booksListPage.value?.results.length) {
+    router.push(`/books/${booksListPage.value.results[0].id}/details/`);
+  }
+}
 </script>
 
 <template>
@@ -50,8 +58,8 @@ async function fetchBookListPageNumber(page: number) {
   <!-- Search query input  -->
   <div class="field">
     <div class="control has-icons-left is-large" :class="isFetching ? 'is-loading' : ''">
-      <input ref="searchInputElement" v-model="searchQuery" @keyup.escape="searchQuery = ''" class="input is-large"
-        type="text" placeholder="Печатайте для поиска по всем книгам...">
+      <input ref="searchInputElement" v-model="searchQuery" @keyup.enter="onPressEnter" @keyup.escape="searchQuery = ''"
+        class="input is-large" type="text" placeholder="Печатайте для поиска по всем книгам...">
       <span class="icon is-left">
         <Icon name="mdi:search" />
       </span>

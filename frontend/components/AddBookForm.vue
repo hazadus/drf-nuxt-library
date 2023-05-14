@@ -395,7 +395,7 @@ if (fetchedPublishers.value) availablePublishers.value = fetchedPublishers.value
       </p>
       <ul>
         <li v-for="book in createdBooks" :key="`created-book-${book.id}`">
-          <NuxtLink :to="`/books/${book.id}/`">
+          <NuxtLink :to="`/books/${book.id}/details/`">
             {{ book.title }}
           </NuxtLink>
           <span v-if="book.year" class="has-text-grey">
