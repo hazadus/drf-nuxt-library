@@ -46,6 +46,11 @@ async function onClickLogOut() {
             <Icon name="mdi:bookshelf" />&nbsp;
             Все книги
           </NuxtLink>
+          <NuxtLink to="/lists/" class="navbar-item" :class="route.path === '/lists/' ? 'is-active' : ''"
+            @click="showMobileMenu = false">
+            <Icon name="mdi:format-list-group" />&nbsp;
+            Списки
+          </NuxtLink>
           <NuxtLink to="/add-book/" class="navbar-item" :class="route.path.startsWith('/add-') ? 'is-active' : ''"
             @click="showMobileMenu = false">
             <Icon name="mdi:file-plus-outline" />&nbsp;

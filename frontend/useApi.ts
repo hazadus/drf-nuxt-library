@@ -12,6 +12,7 @@ import type {
   Note,
   User,
   AuthToken,
+  BookList,
 } from "@/types";
 
 export function getMediaUrl(relativeLink: string) {
@@ -186,6 +187,18 @@ export async function updateNote(noteId: number, text: string) {
   };
   const { get } = useApi(undefined, "PATCH", authStore.token, formData);
   return await get<Note>(`/notes/${noteId}/`);
+}
+
+/************************************************************************************************************
+ *  Book Lists API
+ *************************************************************************************************************/
+
+export async function fetchAllLists() {
+  // Get all public lists and lists created by authenticated user.
+  // If user is not authenticated, then there will be only public lists.
+  const authStore = useAuthStore();
+  const { get } = useApi(undefined, "GET", authStore.token);
+  return await get<BookList[]>("/lists/");
 }
 
 /************************************************************************************************************
