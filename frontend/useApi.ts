@@ -193,12 +193,19 @@ export async function updateNote(noteId: number, text: string) {
  *  Book Lists API
  *************************************************************************************************************/
 
-export async function fetchAllLists() {
+export async function fetchAllBookLists() {
   // Get all public lists and lists created by authenticated user.
   // If user is not authenticated, then there will be only public lists.
   const authStore = useAuthStore();
   const { get } = useApi(undefined, "GET", authStore.token);
   return await get<BookList[]>("/lists/");
+}
+
+export async function fetchBookList(listId: ID | string) {
+  // Get book List details.
+  const authStore = useAuthStore();
+  const { get } = useApi(undefined, "GET", authStore.token);
+  return await get<BookList>(`/lists/${listId}/`);
 }
 
 /************************************************************************************************************

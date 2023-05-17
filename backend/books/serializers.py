@@ -260,6 +260,7 @@ class ListListSerializer(serializers.ModelSerializer):
     List serializer for user-created book `List`.
     """
 
+    user = CustomUserMinimalSerializer(many=False)
     items = ListItemDetailSerializer(many=True)
 
     class Meta:

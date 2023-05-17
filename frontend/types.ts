@@ -86,7 +86,7 @@ export interface BookListItem {
 export interface BookList {
   // This corresponds to `ListListSerializer`
   id: ID;
-  user: ID;
+  user: User;
   title: string;
   description: string;
   is_public: boolean;

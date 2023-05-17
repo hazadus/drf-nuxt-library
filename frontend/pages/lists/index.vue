@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import type { BookList } from '@/types';
-import { fetchAllLists, getMediaUrl } from "@/useApi";
+import { fetchAllBookLists, getMediaUrl } from "@/useApi";
 import { useAuthStore } from '@/stores/AuthStore';
+import { useBookDetailPageUrl, useBookListDetailPageUrl, useBookListAdminPageUrl } from "@/urls";
 
 const authStore = useAuthStore();
-const config = useRuntimeConfig();
 
 const lists: Ref<BookList[]> = ref([]);
+const errors: Ref<Object[]> = ref([]);
 
-const { data: listsData } = await fetchAllLists();
+const { data: listsData, error: listFetchErrors } = await fetchAllBookLists();
 
-if (listsData.value) {
-  lists.value = listsData.value;
-}
+if (listFetchErrors.value) errors.value.push(listFetchErrors.value);
+if (listsData.value) lists.value = listsData.value;
 </script>
 
 <template>
@@ -20,16 +20,34 @@ if (listsData.value) {
     Списки книг | Библиотека
   </Title>
 
+  <!-- Breadcrumbs -->
+  <nav class="breadcrumb is-small has-arrow-separator" aria-label="breadcrumbs">
+    <ul>
+      <li>
+        <NuxtLink to="/">
+          Главная
+        </NuxtLink>
+      </li>
+      <li class="is-active">
+        <NuxtLink to="/lists/">
+          Списки книг
+        </NuxtLink>
+      </li>
+    </ul>
+  </nav>
+
   <h3 class="header is-size-3 mb-5">
     Списки книг
   </h3>
 
+  <ErrorListNotification v-if="errors.length" :errors="errors" />
+
   <template v-if="lists.length">
     <div v-for="list in lists" :key="`booklist-${list.id}`" class="box mb-3">
       <h4 class="header is-size-4">
-        <a>
+        <NuxtLink :to="useBookListDetailPageUrl(list.id)">
           {{ list.title }}
-        </a>
+        </NuxtLink>
       </h4>
       <h5 class="subtitle has-text-grey">
         {{ list.items.length }} книг
@@ -49,9 +67,9 @@ if (listsData.value) {
           <li v-if="item.book.cover_image" class="list-item">
             <figure>
               <p class="image is-2x3">
-                <a :href="`/books/${item.book.id}/details/`">
+                <NuxtLink :to="useBookDetailPageUrl(item.book.id as number)">
                   <img :src="getMediaUrl(item.book.cover_image)" :alt="item.book.title">
-                </a>
+                </NuxtLink>
               </p>
             </figure>
           </li>
@@ -63,7 +81,7 @@ if (listsData.value) {
         <hr class="my-2">
         <p class="has-text-right">
           <small>
-            <a :href="`${config.public.apiBase}/admin/books/list/${list.id}/change/`" target="_blank">
+            <a :href="useBookListAdminPageUrl(list.id)" target="_blank">
               В админке
             </a>
           </small>

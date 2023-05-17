@@ -9,7 +9,7 @@ const route = useRoute();
 
 const book: Ref<Book | null> = ref(null);
 
-const tabName: string = route.params.tab as string;
+const tabName: string = route.params.booksTab as string;
 const allowableTabNames = ["details", "notes",];
 
 if (!allowableTabNames.includes(tabName)) {
