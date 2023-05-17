@@ -41,6 +41,28 @@ if (bookError.value?.statusCode === 404) {
     {{ book ? book.title : "Подробно о книге" }} | Библиотека
   </Title>
 
+  <!-- Breadcrumbs -->
+  <nav class="breadcrumb is-small has-arrow-separator" aria-label="breadcrumbs">
+    <ul>
+      <li>
+        <NuxtLink to="/">
+          Главная
+        </NuxtLink>
+      </li>
+      <li>
+        <NuxtLink to="/books/">
+          Все книги
+        </NuxtLink>
+      </li>
+      <li v-if="book" class="is-active">
+        <a>
+          {{ book.title }}
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+
   <BulmaNotification type="danger" v-if="bookError">
     <p>
       <b>Ошибка {{ bookError.statusCode }}</b> - попробуйте перезагрузить страницу!

@@ -20,6 +20,22 @@ if (!allowableAssets.includes(asset)) {
     Добавить материалы | Библиотека
   </Title>
 
+  <!-- Breadcrumbs -->
+  <nav class="breadcrumb is-small has-arrow-separator" aria-label="breadcrumbs">
+    <ul>
+      <li>
+        <NuxtLink to="/">
+          Главная
+        </NuxtLink>
+      </li>
+      <li class="is-active">
+        <a>
+          Добавить материалы
+        </a>
+      </li>
+    </ul>
+  </nav>
+
   <!-- Tabs -->
   <div class="tabs is-centered">
     <ul>

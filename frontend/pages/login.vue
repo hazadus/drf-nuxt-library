@@ -58,6 +58,22 @@ onBeforeMount(() => {
     Вход в учетную запись | Библиотека
   </Title>
 
+  <!-- Breadcrumbs -->
+  <nav class="breadcrumb is-small has-arrow-separator" aria-label="breadcrumbs">
+    <ul>
+      <li>
+        <NuxtLink to="/">
+          Главная
+        </NuxtLink>
+      </li>
+      <li class="is-active">
+        <NuxtLink to="/login/">
+          Вход в учетную запись
+        </NuxtLink>
+      </li>
+    </ul>
+  </nav>
+
   <div class="columns">
     <div class="column is-6 is-offset-3">
       <div class="box">

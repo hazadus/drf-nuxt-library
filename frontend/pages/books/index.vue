@@ -55,6 +55,22 @@ function onPressEnter() {
     Все книги | Библиотека
   </Title>
 
+  <!-- Breadcrumbs -->
+  <nav class="breadcrumb is-small has-arrow-separator" aria-label="breadcrumbs">
+    <ul>
+      <li>
+        <NuxtLink to="/">
+          Главная
+        </NuxtLink>
+      </li>
+      <li class="is-active">
+        <NuxtLink to="/books/">
+          Все книги
+        </NuxtLink>
+      </li>
+    </ul>
+  </nav>
+
   <!-- Search query input  -->
   <div class="field">
     <div class="control has-icons-left is-large" :class="isFetching ? 'is-loading' : ''">

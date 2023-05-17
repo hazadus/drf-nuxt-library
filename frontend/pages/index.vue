@@ -3,6 +3,17 @@
     Добро пожаловать! | Библиотека
   </Title>
 
+  <!-- Breadcrumbs -->
+  <nav class="breadcrumb is-small has-arrow-separator" aria-label="breadcrumbs">
+    <ul>
+      <li class="is-active">
+        <NuxtLink to="/">
+          Главная
+        </NuxtLink>
+      </li>
+    </ul>
+  </nav>
+
   <section class="hero is-medium is-info">
     <div class="hero-body">
       <div class="columns is-vcentered">

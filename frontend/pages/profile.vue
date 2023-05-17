@@ -15,6 +15,22 @@ const authStore = useAuthStore();
     {{ authStore.user?.username }} | Библиотека
   </Title>
 
+  <!-- Breadcrumbs -->
+  <nav class="breadcrumb is-small has-arrow-separator" aria-label="breadcrumbs">
+    <ul>
+      <li>
+        <NuxtLink to="/">
+          Главная
+        </NuxtLink>
+      </li>
+      <li class="is-active">
+        <NuxtLink to="/profile/">
+          Ваш профиль
+        </NuxtLink>
+      </li>
+    </ul>
+  </nav>
+
   <h2 class="header is-size-2 mb-5">
     Ваш профиль
   </h2>
