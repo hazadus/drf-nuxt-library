@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { fetchNotes, createNewNote } from "@/useApi";
 import { useAuthStore } from '@/stores/AuthStore';
+import { fetchNotes, createNewNote } from "@/useApi";
 import type { Note } from '@/types';
 
 const authStore = useAuthStore();

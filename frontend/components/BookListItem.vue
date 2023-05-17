@@ -2,9 +2,10 @@
 /*
 * Component represents one item in the Book list.
 */
-import type { Book } from '@/types';
-import { getMediaUrl } from "@/useApi";
 import { useAuthStore } from '@/stores/AuthStore';
+import { getMediaUrl } from "@/useApi";
+import { useBookDetailsPageUrl, useBookNotesPageUrl } from "@/urls";
+import type { Book } from '@/types';
 
 const authStore = useAuthStore();
 
@@ -48,17 +49,18 @@ defineProps({
           </NuxtLink>
         </template>
 
-        <NuxtLink v-if="authStore.isAuthenticated" :to="`/books/${book.id}/notes/`" class="button is-small mr-2">
+        <NuxtLink v-if="authStore.isAuthenticated" :to="useBookNotesPageUrl(book.id as number)"
+          class="button is-small mr-2">
           Заметки
         </NuxtLink>
 
-        <NuxtLink :to="`/books/${book.id}/details/`" class="button is-small">
+        <NuxtLink :to="useBookDetailsPageUrl(book.id as number)" class="button is-small">
           Сведения
         </NuxtLink>
       </div>
       <div class="column is-2">
         <figure v-if="book.cover_image" class="image is-2by3">
-          <NuxtLink :to="`/books/${book.id}/details/`">
+          <NuxtLink :to="useBookDetailsPageUrl(book.id as number)">
             <img :src="getMediaUrl(book.cover_image)">
           </NuxtLink>
         </figure>

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { getMediaUrl, fetchBook } from "@/useApi";
-import type { Book } from "@/types";
 import { useAuthStore } from '@/stores/AuthStore';
+import { getMediaUrl, fetchBook } from "@/useApi";
+import { useBookAdminPageUrl } from "@/urls";
+import type { Book } from "@/types";
 
 const authStore = useAuthStore();
 const config = useRuntimeConfig();
@@ -149,8 +150,9 @@ if (bookError.value?.statusCode === 404) {
         </figure>
 
         <!-- Links -->
-        <a v-if="authStore.user?.is_superuser" :href="`${config.public.apiBase}/admin/books/book/${book.id}/change/`"
-          target="_blank">См. в админке</a>
+        <a v-if="authStore.user?.is_superuser" :href="useBookAdminPageUrl(book.id as number)" target="_blank">
+          См. в админке
+        </a>
       </div>
     </div>
   </template>

@@ -1,13 +1,24 @@
 import { ID } from "@/types";
 
-export function useBookDetailPageUrl(bookId: ID | string) {
+export function useBookDetailsPageUrl(bookId: ID | string) {
   // Return URL for Book detail page.
   return `/books/${bookId}/details/`;
+}
+
+export function useBookNotesPageUrl(bookId: ID | string) {
+  // Return URL for Book notes page.
+  return `/books/${bookId}/notes/`;
 }
 
 export function useBookListDetailPageUrl(listId: ID | string) {
   // Return URL for Book List detail page.
   return `/lists/${listId}/details/`;
+}
+
+export function useBookAdminPageUrl(bookId: ID | string) {
+  // Return URL for Book Django admin page.
+  const config = useRuntimeConfig();
+  return `${config.public.apiBase}/admin/books/book/${bookId}/change/`;
 }
 
 export function useBookListAdminPageUrl(listId: ID | string) {

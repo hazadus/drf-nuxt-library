@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getMediaUrl, fetchBookList } from "@/useApi";
 import type { BookList } from "@/types";
-import { useBookDetailPageUrl, useBookListAdminPageUrl } from "@/urls";
+import { useBookDetailsPageUrl, useBookListAdminPageUrl } from "@/urls";
 import { useFormatDateTime } from "@/utils";
 import { useAuthStore } from '@/stores/AuthStore';
 
@@ -78,14 +78,14 @@ if (listData.value) list.value = listData.value;
     <article v-for="item in list.items" :key="`item-${item.id}`" class="media">
       <figure v-if="item.book.cover_image" class="media-left">
         <p class="image is-64x64">
-          <NuxtLink :to="useBookDetailPageUrl(item.book.id as number)">
+          <NuxtLink :to="useBookDetailsPageUrl(item.book.id as number)">
             <img :src="getMediaUrl(item.book.cover_image)">
           </NuxtLink>
         </p>
       </figure>
       <div class="media-content">
         <div class="content">
-          <NuxtLink :to="useBookDetailPageUrl(item.book.id as number)">
+          <NuxtLink :to="useBookDetailsPageUrl(item.book.id as number)">
             <h5 class="header is-size-5">
               {{ item.book.title }}
             </h5>

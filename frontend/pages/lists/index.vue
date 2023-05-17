@@ -2,7 +2,7 @@
 import type { BookList } from '@/types';
 import { fetchAllBookLists, getMediaUrl } from "@/useApi";
 import { useAuthStore } from '@/stores/AuthStore';
-import { useBookDetailPageUrl, useBookListDetailPageUrl, useBookListAdminPageUrl } from "@/urls";
+import { useBookDetailsPageUrl, useBookListDetailPageUrl, useBookListAdminPageUrl } from "@/urls";
 
 const authStore = useAuthStore();
 
@@ -67,7 +67,7 @@ if (listsData.value) lists.value = listsData.value;
           <li v-if="item.book.cover_image" class="list-item">
             <figure>
               <p class="image is-2x3">
-                <NuxtLink :to="useBookDetailPageUrl(item.book.id as number)">
+                <NuxtLink :to="useBookDetailsPageUrl(item.book.id as number)">
                   <img :src="getMediaUrl(item.book.cover_image)" :alt="item.book.title">
                 </NuxtLink>
               </p>

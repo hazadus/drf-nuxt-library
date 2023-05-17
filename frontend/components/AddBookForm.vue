@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { Book, ListPage, Author, Publisher } from "@/types";
-import { fetchAllBooks, fetchAllAuthors, fetchAllPublishers, createNewBook, updateBookFiles } from "@/useApi";
 import { useAuthStore } from '@/stores/AuthStore';
+import { fetchAllBooks, fetchAllAuthors, fetchAllPublishers, createNewBook, updateBookFiles } from "@/useApi";
+import { useBookDetailsPageUrl } from "@/urls";
+import { Book, ListPage, Author, Publisher } from "@/types";
 
 const authStore = useAuthStore();
 
@@ -395,7 +396,7 @@ if (fetchedPublishers.value) availablePublishers.value = fetchedPublishers.value
       </p>
       <ul>
         <li v-for="book in createdBooks" :key="`created-book-${book.id}`">
-          <NuxtLink :to="`/books/${book.id}/details/`">
+          <NuxtLink :to="useBookDetailsPageUrl(book.id as number)">
             {{ book.title }}
           </NuxtLink>
           <span v-if="book.year" class="has-text-grey">

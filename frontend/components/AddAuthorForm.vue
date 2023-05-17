@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Author } from "@/types";
 import { fetchAllAuthors, createNewAuthor, getMediaUrl } from "@/useApi";
+import { Author } from "@/types";
 
 const existingAuthors: Ref<Author[]> = ref([]);
 const createdAuthors: Ref<Author[]> = ref([]);
