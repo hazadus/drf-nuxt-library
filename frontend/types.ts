@@ -73,3 +73,24 @@ export interface ListPage<T> {
 export interface AuthToken {
   auth_token: string;
 }
+export interface BookListItem {
+  // This corresponds to `ListItemDetailSerializer`
+  id: ID;
+  position: number;
+  book: Book;
+  description: string;
+  created: Date;
+  updated: Date;
+}
+
+export interface BookList {
+  // This corresponds to `ListListSerializer`
+  id: ID;
+  user: User;
+  title: string;
+  description: string;
+  is_public: boolean;
+  items: BookListItem[];
+  created: Date;
+  updated: Date;
+}

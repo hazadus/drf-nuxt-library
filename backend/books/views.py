@@ -5,8 +5,13 @@ from rest_framework.generics import (
     RetrieveUpdateDestroyAPIView,
     ListCreateAPIView,
     CreateAPIView,
+    GenericAPIView,
 )
-from rest_framework.mixins import CreateModelMixin
+from rest_framework.mixins import (
+    CreateModelMixin,
+    RetrieveModelMixin,
+    DestroyModelMixin,
+)
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
@@ -18,8 +23,9 @@ from .serializers import (
     AuthorDetailSerializer,
     AuthorCreateSerializer,
     NoteDetailSerializer,
+    ListListSerializer,
 )
-from .models import Author, Book, Publisher, Note
+from .models import Author, Book, Publisher, Note, List
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -243,3 +249,58 @@ class NoteDetailView(RetrieveUpdateDestroyAPIView):
 
     queryset = Note.objects.all()
     serializer_class = NoteDetailSerializer
+
+
+class ListListView(ListAPIView):
+    """
+    List all available book Lists - public or created by authenticated user (not paginated).
+    """
+
+    authentication_classes = [authentication.TokenAuthentication]
+
+    queryset = List.objects.all()
+    serializer_class = ListListSerializer
+
+    def get_queryset(self) -> QuerySet:
+        """
+        Filter QuerySet - only public lists or lists created by authenticated user.
+        """
+        queryset = List.objects.all()
+
+        if self.request.auth:
+            queryset = queryset.filter(
+                Q(is_public=True) | Q(user_id=self.request.user.id)
+            )
+        else:
+            queryset = queryset.filter(is_public=True)
+
+        return queryset
+
+
+class ListDetailView(RetrieveModelMixin, DestroyModelMixin, GenericAPIView):
+    """
+    Detailed `List` view / delete view.
+    """
+
+    authentication_classes = [authentication.TokenAuthentication]
+
+    queryset = List.objects.all()
+    serializer_class = ListListSerializer
+
+    def get(self, request, *args, **kwargs):
+        """
+        Only allow to retrieve public Lists, or created by authenticated user.
+        """
+        instance: List = self.get_object()
+        if instance.is_public or instance.user == request.user:
+            return self.retrieve(request, *args, **kwargs)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def delete(self, request, *args, **kwargs):
+        """
+        Only allow author to delete List.
+        """
+        instance: List = self.get_object()
+        if instance.user == request.user:
+            return self.destroy(request, *args, **kwargs)
+        return Response(status=status.HTTP_403_FORBIDDEN)

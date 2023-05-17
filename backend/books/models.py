@@ -296,3 +296,86 @@ class BookCard(models.Model):
             book=self.book,
             user=self.user,
         )
+
+
+class List(models.Model):
+    """
+    Represents user-created list containing arbitrary number of books (`ListItem`s).
+    """
+
+    user = models.ForeignKey(
+        verbose_name=_("пользователь"),
+        to=get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="lists_created",
+        blank=True,
+        null=True,
+        default=None,
+    )
+    title = models.CharField(
+        verbose_name=_("название"),
+        max_length=512,
+    )
+    description = models.TextField(
+        verbose_name=_("описание"),
+        blank=True,
+        null=True,
+        default=None,
+    )
+    is_public = models.BooleanField(
+        verbose_name=_("публичный"),
+        default=False,
+    )
+    created = models.DateTimeField(verbose_name=_("создан"), auto_now_add=True)
+    updated = models.DateTimeField(verbose_name=_("изменен"), auto_now=True)
+
+    class Meta:
+        ordering = ["-created"]
+        verbose_name = _("список")
+        verbose_name_plural = _("списки")
+
+    def __str__(self):
+        return self.title
+
+
+class ListItem(models.Model):
+    """
+    Represents an item of the user-created book list.
+    """
+
+    list = models.ForeignKey(
+        verbose_name=_("список"),
+        to=List,
+        on_delete=models.CASCADE,
+        related_name="items",
+    )
+    position = models.IntegerField(
+        verbose_name=_("номер в списке"),
+        default=1,
+    )
+    book = models.ForeignKey(
+        verbose_name=_("книга"),
+        to=Book,
+        on_delete=models.CASCADE,
+        related_name="list_items",
+    )
+    description = models.TextField(
+        verbose_name=_("описание"),
+        blank=True,
+        null=True,
+        default=None,
+    )
+    created = models.DateTimeField(verbose_name=_("создана"), auto_now_add=True)
+    updated = models.DateTimeField(verbose_name=_("изменена"), auto_now=True)
+
+    class Meta:
+        ordering = ["list", "position"]
+        verbose_name = _("элемент списка")
+        verbose_name_plural = _("элементы списков")
+
+    def __str__(self):
+        return "#{position} в {list_title} - {book_title}".format(
+            position=self.position,
+            list_title=self.list.title,
+            book_title=self.book.title,
+        )
