@@ -60,7 +60,7 @@ if (listData.value) list.value = listData.value;
       {{ list.title }}
     </h2>
 
-    <div class="content">
+    <div class="content mb-6">
       <p class="has-text-grey">
         Книг в списке – {{ list.items.length }}
         &middot;&nbsp;Всего страниц – {{ totalPagesInList }}
@@ -93,12 +93,12 @@ if (listData.value) list.value = listData.value;
 
           <MarkdownStringRenderer v-if="item.description" class="mb-5" :markdownString="item.description" />
 
-          <template v-if="item.book.description">
+          <BulmaNotification v-if="item.book.description">
             <h6 class="header is-size-6">
               О книге
             </h6>
             <MarkdownStringRenderer :markdownString="item.book.description" />
-          </template>
+          </BulmaNotification>
         </div>
       </div>
     </article>

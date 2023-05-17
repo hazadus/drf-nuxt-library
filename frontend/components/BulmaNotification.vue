@@ -6,7 +6,7 @@
 const props = defineProps({
   type: {
     type: String,
-    default: "info",
+    default: "",
     required: false,
   },
   isCloseable: {
@@ -18,7 +18,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <div :class="`notification is-${props.type}`">
+  <div class="notification" :class="type != '' ? `is-${type}` : ''">
     <button v-if="props.isCloseable" class="delete"></button>
     <slot></slot>
   </div>
