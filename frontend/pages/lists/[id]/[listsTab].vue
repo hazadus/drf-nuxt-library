@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { useAuthStore } from '@/stores/AuthStore';
 import { getMediaUrl, fetchBookList } from "@/useApi";
-import type { BookList } from "@/types";
 import { useBookDetailsPageUrl, useBookListAdminPageUrl } from "@/urls";
 import { useFormatDateTime } from "@/utils";
-import { useAuthStore } from '@/stores/AuthStore';
+import type { BookList } from "@/types";
 
 const authStore = useAuthStore();
 const route = useRoute();
@@ -60,7 +60,7 @@ if (listData.value) list.value = listData.value;
       {{ list.title }}
     </h2>
 
-    <div class="content mb-6">
+    <div class="content">
       <p class="has-text-grey">
         Книг в списке – {{ list.items.length }}
         &middot;&nbsp;Всего страниц – {{ totalPagesInList }}
@@ -70,10 +70,9 @@ if (listData.value) list.value = listData.value;
           &middot;&nbsp;<a :href="useBookListAdminPageUrl(list.id)" target="_blank">Править в админке</a>
         </template>
       </p>
-      <p>
-        {{ list.description }}
-      </p>
     </div>
+
+    <MarkdownStringRenderer v-if="list.description" :markdownString="list.description" class="mb-6" />
 
     <article v-for="item in list.items" :key="`item-${item.id}`" class="media">
       <figure v-if="item.book.cover_image" class="media-left">

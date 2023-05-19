@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { fetchAllBooks, getMediaUrl } from "@/useApi";
 import type { Book, ListPage } from '@/types';
-import { fetchAllBooks } from "@/useApi";
 
 const router = useRouter();
 
@@ -41,11 +41,24 @@ async function fetchBookListPageNumber(page: number) {
   const { data: booksData } = await fetchAllBooks(page, query);
   booksListPage.value = booksData.value;
   isFetching.value = false;
+  window.scrollTo(0, 0);
 }
 
 function onPressEnter() {
+  // When user hit "Enter" in search input, open book details page for the first book in the list.
   if (booksListPage.value?.results.length) {
     router.push(`/books/${booksListPage.value.results[0].id}/details/`);
+  }
+}
+
+async function onPressShiftEnter() {
+  // When user hit "Shift+Enter" in search input, open file for the first book in the list (if present).
+  if (booksListPage.value?.results.length) {
+    if (booksListPage.value.results[0].file) {
+      await navigateTo(getMediaUrl(booksListPage.value.results[0].file), {
+        external: true
+      })
+    }
   }
 }
 </script>
@@ -74,8 +87,9 @@ function onPressEnter() {
   <!-- Search query input  -->
   <div class="field">
     <div class="control has-icons-left is-large" :class="isFetching ? 'is-loading' : ''">
-      <input ref="searchInputElement" v-model="searchQuery" @keyup.enter="onPressEnter" @keyup.escape="searchQuery = ''"
-        class="input is-large" type="text" placeholder="Печатайте для поиска по всем книгам...">
+      <input ref="searchInputElement" v-model="searchQuery" @keyup.enter="onPressEnter"
+        @keyup.shift.enter.exact="onPressShiftEnter" @keyup.escape="searchQuery = ''" class="input is-large" type="text"
+        placeholder="Печатайте для поиска по всем книгам...">
       <span class="icon is-left">
         <Icon name="mdi:search" />
       </span>
