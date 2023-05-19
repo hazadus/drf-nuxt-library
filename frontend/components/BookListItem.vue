@@ -22,7 +22,9 @@ defineProps({
     <div class="columns">
       <div class="column is-10">
         <h3 class="header is-size-3">
-          <b>{{ book.title }}</b>
+          <NuxtLink :to="useBookDetailsPageUrl(book.id as number)">
+            {{ book.title }}
+          </NuxtLink>
         </h3>
         <h4 class="subtitle is-4">
           <template v-for="(author, index) in book.authors">

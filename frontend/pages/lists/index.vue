@@ -52,6 +52,7 @@ if (listsData.value) lists.value = listsData.value;
       <h5 class="subtitle has-text-grey">
         {{ list.items.length }} книг
         <span v-if="list.is_public">
+          &middot;&nbsp;Составил <b>{{ list.user.username }}</b>
           &middot;&nbsp;
           <Icon name="ic:baseline-public" />
         </span>
