@@ -88,8 +88,9 @@ const authStore = useAuthStore();
     </div>
 
     <div class="column is-6">
-      <figure v-if="authStore.user?.profile_image" class="image is-1by1">
-        <img class="is-rounded" :src="getMediaUrl(authStore.user.profile_image)">
+      <figure v-if="authStore.user?.profile_image_thumbnail_large" class="image is-1by1">
+        <img class="is-rounded" :src="getMediaUrl(authStore.user.profile_image_thumbnail_large)"
+          style="width: 300px; height: 300px;">
       </figure>
     </div>
   </div>

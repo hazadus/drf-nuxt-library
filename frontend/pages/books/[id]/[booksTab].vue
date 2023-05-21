@@ -145,8 +145,8 @@ if (bookError.value?.statusCode === 404) {
 
       <div class="column is-2">
         <!-- Book cover -->
-        <figure v-if="book.cover_image" class="image is-2by3 mb-2">
-          <img :src="getMediaUrl(book.cover_image)">
+        <figure v-if="book.cover_thumbnail_large" class="image is-2by3 mb-2">
+          <img :src="getMediaUrl(book.cover_thumbnail_large)">
         </figure>
 
         <!-- Links -->

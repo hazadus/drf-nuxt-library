@@ -2,6 +2,9 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFit, SmartResize
+
 
 class Tag(models.Model):
     """
@@ -101,6 +104,14 @@ class Author(models.Model):
         blank=True,
         upload_to="images/authors/",
     )
+    # NB: from `django-imagekit` docs: ImageSpecFields are virtual — they add no fields to your database and don't
+    # require a database.
+    portrait_thumbnail = ImageSpecField(
+        source="portrait",
+        processors=[SmartResize(width=132, height=176, upscale=True)],
+        format="JPEG",
+        options={"quality": 100},
+    )
 
     class Meta:
         ordering = ["last_name"]
@@ -192,6 +203,26 @@ class Book(models.Model):
         null=True,
         blank=True,
         upload_to="images/covers/",
+    )
+    # NB: from `django-imagekit` docs: ImageSpecFields are virtual — they add no fields to your database and don't
+    # require a database.
+    cover_thumbnail_small = ImageSpecField(
+        source="cover_image",
+        processors=[ResizeToFit(width=64, upscale=True)],
+        format="JPEG",
+        options={"quality": 100},
+    )
+    cover_thumbnail_medium = ImageSpecField(
+        source="cover_image",
+        processors=[ResizeToFit(width=128, upscale=True)],
+        format="JPEG",
+        options={"quality": 100},
+    )
+    cover_thumbnail_large = ImageSpecField(
+        source="cover_image",
+        processors=[ResizeToFit(width=256, upscale=True)],
+        format="JPEG",
+        options={"quality": 100},
     )
     file = models.FileField(
         verbose_name=_("файл книги"),

@@ -3,9 +3,9 @@ Module contains serializers for models from `bookmarks` app.
 
 Note about serializer naming:
 SomeDetailSerializer - maximum details, with all nested objects serialized.
-SomeListSerializer or SomeMinimalSerializer - concise serializer
+SomeListSerializer or SomeMinimalSerializer - concise serializer.
 
-For simple models, only "detail" serializers are created.
+For simple models, only "detail" serializers are present.
 """
 from rest_framework import serializers
 
@@ -72,7 +72,25 @@ class AuthorMinimalSerializer(serializers.ModelSerializer):
         ]
 
 
-class AuthorDetailSerializer(serializers.ModelSerializer):
+class AuthorURLRepresentationMixin(serializers.ModelSerializer):
+    """
+    Deliver consistent relative URLs of author portrait images.
+    """
+
+    def to_representation(self, instance):
+        """
+        Deliver consistent relative URLs of author portrait images.
+        Issue: https://forum.djangoproject.com/t/drf-imagefield-serializes-entire-url-with-domain-name/6975
+        """
+        ret = super().to_representation(instance)
+        ret["portrait"] = instance.portrait.url if instance.portrait else ""
+        ret["portrait_thumbnail"] = (
+            instance.portrait_thumbnail.url if instance.portrait else ""
+        )
+        return ret
+
+
+class AuthorDetailSerializer(AuthorURLRepresentationMixin, serializers.ModelSerializer):
     """
     Serializer for Author model - detailed.
     """
@@ -89,19 +107,11 @@ class AuthorDetailSerializer(serializers.ModelSerializer):
             "last_name",
             "description",
             "portrait",
+            "portrait_thumbnail",
         ]
 
-    def to_representation(self, instance):
-        """
-        Deliver consistent relative URLs of author portrait images.
-        Issue: https://forum.djangoproject.com/t/drf-imagefield-serializes-entire-url-with-domain-name/6975
-        """
-        ret = super().to_representation(instance)
-        ret["portrait"] = instance.portrait.url if instance.portrait else ""
-        return ret
 
-
-class AuthorCreateSerializer(serializers.ModelSerializer):
+class AuthorCreateSerializer(AuthorURLRepresentationMixin, serializers.ModelSerializer):
     """
     Serializer for Author model - used to create new authors.
     """
@@ -116,19 +126,36 @@ class AuthorCreateSerializer(serializers.ModelSerializer):
             "last_name",
             "description",
             "portrait",
+            "portrait_thumbnail",
         ]
+
+
+class BookURLRepresentationMixin(serializers.ModelSerializer):
+    """
+    Deliver consistent relative URLs of cover images and attached file.
+    """
 
     def to_representation(self, instance):
         """
-        Deliver consistent relative URLs of author portrait images.
+        Deliver consistent relative URLs of cover images and attached file.
         Issue: https://forum.djangoproject.com/t/drf-imagefield-serializes-entire-url-with-domain-name/6975
         """
         ret = super().to_representation(instance)
-        ret["portrait"] = instance.portrait.url if instance.portrait else ""
+        ret["cover_image"] = instance.cover_image.url if instance.cover_image else ""
+        ret["cover_thumbnail_small"] = (
+            instance.cover_thumbnail_small.url if instance.cover_image else ""
+        )
+        ret["cover_thumbnail_medium"] = (
+            instance.cover_thumbnail_medium.url if instance.cover_image else ""
+        )
+        ret["cover_thumbnail_large"] = (
+            instance.cover_thumbnail_large.url if instance.cover_image else ""
+        )
+        ret["file"] = instance.file.url if instance.file else ""
         return ret
 
 
-class BookListSerializer(serializers.ModelSerializer):
+class BookListSerializer(BookURLRepresentationMixin, serializers.ModelSerializer):
     """
     Serializer for Book model - for use in list view.
     """
@@ -153,23 +180,16 @@ class BookListSerializer(serializers.ModelSerializer):
             "contents",
             "tags",
             "cover_image",
+            "cover_thumbnail_small",
+            "cover_thumbnail_medium",
+            "cover_thumbnail_large",
             "file",
             "created",
             "updated",
         ]
 
-    def to_representation(self, instance):
-        """
-        Deliver consistent relative URLs of cover images and attached file.
-        Issue: https://forum.djangoproject.com/t/drf-imagefield-serializes-entire-url-with-domain-name/6975
-        """
-        ret = super().to_representation(instance)
-        ret["cover_image"] = instance.cover_image.url if instance.cover_image else ""
-        ret["file"] = instance.file.url if instance.file else ""
-        return ret
 
-
-class BookDetailSerializer(serializers.ModelSerializer):
+class BookDetailSerializer(BookURLRepresentationMixin, serializers.ModelSerializer):
     """
     Serializer for Book model - for detailed view.
     """
@@ -194,23 +214,16 @@ class BookDetailSerializer(serializers.ModelSerializer):
             "contents",
             "tags",
             "cover_image",
+            "cover_thumbnail_small",
+            "cover_thumbnail_medium",
+            "cover_thumbnail_large",
             "file",
             "created",
             "updated",
         ]
 
-    def to_representation(self, instance):
-        """
-        Deliver consistent relative URLs of cover images and attached file.
-        Issue: https://forum.djangoproject.com/t/drf-imagefield-serializes-entire-url-with-domain-name/6975
-        """
-        ret = super().to_representation(instance)
-        ret["cover_image"] = instance.cover_image.url if instance.cover_image else ""
-        ret["file"] = instance.file.url if instance.file else ""
-        return ret
 
-
-class BookCreateSerializer(serializers.ModelSerializer):
+class BookCreateSerializer(BookURLRepresentationMixin, serializers.ModelSerializer):
     """
     Serializer for Book model - to create new books.
     """
@@ -230,6 +243,9 @@ class BookCreateSerializer(serializers.ModelSerializer):
             "contents",
             "tags",
             "cover_image",
+            "cover_thumbnail_small",
+            "cover_thumbnail_medium",
+            "cover_thumbnail_large",
             "file",
             "created",
             "updated",
@@ -257,7 +273,7 @@ class ListItemDetailSerializer(serializers.ModelSerializer):
 
 class ListListSerializer(serializers.ModelSerializer):
     """
-    List serializer for user-created book `List`.
+    List serializer for user-created `List` of books.
     """
 
     user = CustomUserMinimalSerializer(many=False)
