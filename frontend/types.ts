@@ -6,7 +6,9 @@ export interface User {
   email: string;
   first_name: string;
   last_name: string;
-  profile_image: string;
+  profile_image?: string;
+  profile_image_thumbnail_small?: string;
+  profile_image_thumbnail_large?: string;
   is_active: boolean;
   is_staff: boolean;
   is_superuser: boolean;
@@ -32,6 +34,7 @@ export interface Author {
   last_name: string;
   description?: string;
   portrait?: string;
+  portrait_thumbnail?: string;
 }
 
 export interface Book {
@@ -47,6 +50,9 @@ export interface Book {
   contents?: string;
   tags?: Tag[];
   cover_image?: string;
+  cover_thumbnail_small?: string;
+  cover_thumbnail_medium?: string;
+  cover_thumbnail_large?: string;
   file?: string;
   created?: Date;
   updated?: Date;

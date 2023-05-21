@@ -217,9 +217,9 @@ existingAuthors.value = fetchedAuthors.value || [];
       </p>
 
       <article v-for="author in createdAuthors" :key="`created-author-${author.id}`" class="media">
-        <figure v-if="author.portrait" class="media-left">
+        <figure v-if="author.portrait_thumbnail" class="media-left">
           <p class="image is-64x64">
-            <img :src="getMediaUrl(author.portrait)">
+            <img :src="getMediaUrl(author.portrait_thumbnail)">
           </p>
         </figure>
         <div class="media-content">

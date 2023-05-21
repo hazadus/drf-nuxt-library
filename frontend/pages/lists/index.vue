@@ -65,11 +65,11 @@ if (listsData.value) lists.value = listsData.value;
       <!-- Book covers -->
       <ul class="book-cover-list">
         <template v-for="item in list.items" :key="`book-item-${item.book.id}`">
-          <li v-if="item.book.cover_image" class="list-item">
+          <li v-if="item.book.cover_thumbnail_small" class="list-item">
             <figure>
               <p class="image is-2x3">
                 <NuxtLink :to="useBookDetailsPageUrl(item.book.id as number)">
-                  <img :src="getMediaUrl(item.book.cover_image)" :alt="item.book.title">
+                  <img :src="getMediaUrl(item.book.cover_thumbnail_small)" :alt="item.book.title">
                 </NuxtLink>
               </p>
             </figure>

@@ -80,10 +80,11 @@ async function onClickLogOut() {
           <!-- Profile drop-down -->
           <div class="navbar-item has-dropdown is-hoverable" v-if="authStore.isAuthenticated && authStore.user">
             <div class="navbar-link user-menu">
-              <figure v-if="authStore.user.profile_image" class="image mr-2 is-hidden-mobile is-hidden-tablet-only">
+              <figure v-if="authStore.user.profile_image_thumbnail_small"
+                class="image mr-2 is-hidden-mobile is-hidden-tablet-only">
                 <img class="is-rounded is-32x32 "
                   style="width: 32px !important; height: 32px !important; max-height: 32px !important;"
-                  :src="getMediaUrl(authStore.user.profile_image)">
+                  :src="getMediaUrl(authStore.user.profile_image_thumbnail_small)">
               </figure>
               {{ authStore.user.username }}
             </div>

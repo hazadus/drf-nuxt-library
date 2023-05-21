@@ -75,10 +75,10 @@ if (listData.value) list.value = listData.value;
     <MarkdownStringRenderer v-if="list.description" :markdownString="list.description" class="mb-6" />
 
     <article v-for="item in list.items" :key="`item-${item.id}`" class="media">
-      <figure v-if="item.book.cover_image" class="media-left">
+      <figure v-if="item.book.cover_thumbnail_medium" class="media-left">
         <p class="image is-64x64">
           <NuxtLink :to="useBookDetailsPageUrl(item.book.id as number)">
-            <img :src="getMediaUrl(item.book.cover_image)">
+            <img :src="getMediaUrl(item.book.cover_thumbnail_medium)">
           </NuxtLink>
         </p>
       </figure>

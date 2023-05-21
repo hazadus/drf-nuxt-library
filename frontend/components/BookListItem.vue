@@ -61,9 +61,9 @@ defineProps({
         </NuxtLink>
       </div>
       <div class="column is-2">
-        <figure v-if="book.cover_image" class="image is-2by3">
+        <figure v-if="book.cover_thumbnail_large" class="image is-2by3">
           <NuxtLink :to="useBookDetailsPageUrl(book.id as number)">
-            <img :src="getMediaUrl(book.cover_image)">
+            <img :src="getMediaUrl(book.cover_thumbnail_large)">
           </NuxtLink>
         </figure>
       </div>
