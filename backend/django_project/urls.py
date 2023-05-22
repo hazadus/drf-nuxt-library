@@ -18,6 +18,8 @@ urlpatterns = [
     # Djoser endpoints to manage users:
     path("api/v1/", include("djoser.urls")),
     path("api/v1/", include("djoser.urls.authtoken")),
+    # django-debug-toolbar:
+    path("__debug__/", include("debug_toolbar.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Configure Admin panel titles
