@@ -24,6 +24,7 @@ from .serializers import (
     AuthorCreateSerializer,
     NoteDetailSerializer,
     ListListSerializer,
+    ListDetailSerializer,
 )
 from .models import Author, Book, Publisher, Note, List
 
@@ -285,7 +286,7 @@ class ListDetailView(RetrieveModelMixin, DestroyModelMixin, GenericAPIView):
     authentication_classes = [authentication.TokenAuthentication]
 
     queryset = List.objects.all()
-    serializer_class = ListListSerializer
+    serializer_class = ListDetailSerializer
 
     def get(self, request, *args, **kwargs):
         """

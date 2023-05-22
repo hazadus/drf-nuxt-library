@@ -158,6 +158,8 @@ class BookURLRepresentationMixin(serializers.ModelSerializer):
 class BookListSerializer(BookURLRepresentationMixin, serializers.ModelSerializer):
     """
     Serializer for Book model - for use in list view.
+
+    NB: "isbn", "description", "contents" are excluded to make serialized data more compact.
     """
 
     user = CustomUserMinimalSerializer(many=False)
@@ -175,9 +177,6 @@ class BookListSerializer(BookURLRepresentationMixin, serializers.ModelSerializer
             "publisher",
             "year",
             "pages",
-            "isbn",
-            "description",
-            "contents",
             "tags",
             "cover_image",
             "cover_thumbnail_small",
@@ -271,9 +270,51 @@ class ListItemDetailSerializer(serializers.ModelSerializer):
         ]
 
 
+class ListItemListSerializer(serializers.ModelSerializer):
+    """
+    Compact serializer for `ListItem`.
+    """
+
+    book = BookListSerializer(many=False)
+
+    class Meta:
+        model = ListItem
+        fields = [
+            "id",
+            "position",
+            "book",
+            "description",
+            "created",
+            "updated",
+        ]
+
+
 class ListListSerializer(serializers.ModelSerializer):
     """
     List serializer for user-created `List` of books.
+    Much more compact (in terms of data transferred) version than `ListDetailSerializer`.
+    """
+
+    user = CustomUserMinimalSerializer(many=False)
+    items = ListItemListSerializer(many=True)
+
+    class Meta:
+        model = List
+        fields = [
+            "id",
+            "user",
+            "title",
+            "description",
+            "is_public",
+            "items",
+            "created",
+            "updated",
+        ]
+
+
+class ListDetailSerializer(serializers.ModelSerializer):
+    """
+    Detailed serializer for user-created `List` of books.
     """
 
     user = CustomUserMinimalSerializer(many=False)
