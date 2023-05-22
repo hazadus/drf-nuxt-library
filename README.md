@@ -2,6 +2,29 @@
 
 Приложение для ведения учета книг в домашней библиотеке, разработано по заказу жены.
 
+Проект работает по адресу: http://library.hazadus.ru/.
+
+Перечень реализованных возможностей: [wiki on GitHub](https://github.com/hazadus/drf-nuxt-library/wiki/Что-реализовано-на-сайте).
+
+Подробный список последних изменений: [changelog.md](https://github.com/hazadus/drf-nuxt-library/blob/main/changelog.md).
+
+Что сейчас в работе: [project on GitHub](https://github.com/users/hazadus/projects/5).
+
+Все планы: [issues on GitHub](https://github.com/hazadus/drf-nuxt-library/issues).
+
+### Использованные библиотеки
+
+- Backend: **Django**
+  - `django-rest-framework`
+  - `djoser`
+  - `django-debug-toolbar`
+  - `django-imagekit`
+- Frontend: **Nuxt 3**
+  - `@vueuse/nuxt`
+  - `nuxt-icon`
+  - `@pinia/nuxt`
+  - `@nuxt/content`
+
 ### Запуск проекта в режиме разработки
 
 Создаём `docker-compose.yml`, используя шаблон `docker-compose.dev.yml`.

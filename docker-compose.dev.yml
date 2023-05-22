@@ -17,6 +17,9 @@ services:
       - "SECRET_KEY=django-insecure-..."
       - "DEBUG=True"
       - "FRONTEND_URL=http://localhost"
+    # Expose port so we can see `django-debug-toolbar`:
+    ports:
+      - "8000:8000"
     depends_on:
       - db
   node:

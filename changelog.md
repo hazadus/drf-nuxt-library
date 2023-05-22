@@ -1,6 +1,7 @@
 ## 22.05.2023, Пн
 
 - 14:40 - Backend: оптимизирован serializer `ListDetailSerializer` для сокращения объема передаваемых на фронт данных.
+- 15:00 - Backend: добавлен `django-debug-toolbar`.
 
 ## 21.05.2023, Вс
 
