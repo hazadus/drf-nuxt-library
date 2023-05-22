@@ -72,7 +72,6 @@ class BookListView(ListAPIView):
     List all available books with pagination.
     """
 
-    queryset = Book.objects.all()
     serializer_class = BookListSerializer
     pagination_class = StandardResultsSetPagination
 
@@ -80,7 +79,17 @@ class BookListView(ListAPIView):
         """
         Filter QuerySet using passed GET parameter `query`.
         """
-        queryset = Book.objects.all().filter()
+        queryset = (
+            Book.objects.all()
+            .prefetch_related(
+                "authors",
+                "tags",
+            )
+            .select_related(
+                "publisher",
+                "user",
+            )
+        )
         query = self.request.query_params.get("query", "")
 
         if query:
@@ -102,7 +111,17 @@ class BookDetailView(RetrieveUpdateDestroyAPIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    queryset = Book.objects.all()
+    queryset = (
+        Book.objects.all()
+        .prefetch_related(
+            "authors",
+            "tags",
+        )
+        .select_related(
+            "user",
+            "publisher",
+        )
+    )
     serializer_class = BookDetailSerializer
 
 
@@ -161,14 +180,13 @@ class AuthorListView(ListAPIView):
     List all available authors (not paginated).
     """
 
-    queryset = Author.objects.all()
     serializer_class = AuthorDetailSerializer
 
     def get_queryset(self) -> QuerySet:
         """
         Filter QuerySet by `last_name` using passed GET parameter `query`.
         """
-        queryset = Author.objects.all()
+        queryset = Author.objects.all().prefetch_related("user")
         query = self.request.query_params.get("query", "")
 
         if query:
@@ -258,15 +276,22 @@ class ListListView(ListAPIView):
     """
 
     authentication_classes = [authentication.TokenAuthentication]
-
-    queryset = List.objects.all()
     serializer_class = ListListSerializer
 
     def get_queryset(self) -> QuerySet:
         """
         Filter QuerySet - only public lists or lists created by authenticated user.
         """
-        queryset = List.objects.all()
+        queryset = (
+            List.objects.all()
+            .prefetch_related(
+                "items__book__publisher",
+                "items__book__user",
+                "items__book__authors",
+                "items__book__tags",
+            )
+            .select_related("user")
+        )
 
         if self.request.auth:
             queryset = queryset.filter(
@@ -284,9 +309,23 @@ class ListDetailView(RetrieveModelMixin, DestroyModelMixin, GenericAPIView):
     """
 
     authentication_classes = [authentication.TokenAuthentication]
-
-    queryset = List.objects.all()
     serializer_class = ListDetailSerializer
+
+    def get_queryset(self) -> QuerySet:
+        """
+        Prefetch related fields to reduce number of SQL queries.
+        """
+        queryset = (
+            List.objects.all()
+            .prefetch_related(
+                "items__book__publisher",
+                "items__book__user",
+                "items__book__authors",
+                "items__book__tags",
+            )
+            .select_related("user")
+        )
+        return queryset
 
     def get(self, request, *args, **kwargs):
         """

@@ -2,6 +2,10 @@
 
 - 14:40 - Backend: оптимизирован serializer `ListDetailSerializer` для сокращения объема передаваемых на фронт данных.
 - 15:00 - Backend: добавлен `django-debug-toolbar`.
+- 16:00 - Backend: `/api/v1/lists/` - количество SQL запросов уменьшено до 7.
+- 17:20 - Backend: `/api/v1/books/` - количество SQL запросов уменьшено до 4.
+- 17:30 - Backend: `/api/v1/books/<int:pk>` - количество SQL запросов уменьшено до 3.
+- 17:35 - Backend: `/api/v1/authors/` - количество SQL запросов уменьшено до 2.
 
 ## 21.05.2023, Вс
 
