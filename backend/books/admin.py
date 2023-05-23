@@ -1,4 +1,6 @@
+from django import forms
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 
 from .models import Tag, Publisher, Author, Book, Note, BookCard, List, ListItem
 
@@ -42,13 +44,27 @@ class AuthorAdmin(admin.ModelAdmin):
     ]
 
 
+class BookAdminForm(forms.ModelForm):
+    class Meta:
+        model = Book
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields[
+            "cover_image"
+        ].widget.template_name = "books/widgets/book_cover_image.html"
+
+
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
     """
     Configures admin panel views for Book.
     """
 
-    model = Book
+    # model = Book
+    form = BookAdminForm
     list_display = [
         "title",
         "publisher",
@@ -59,6 +75,64 @@ class BookAdmin(admin.ModelAdmin):
     readonly_fields = [
         "created",
         "updated",
+    ]
+    fieldsets = [
+        (
+            _("Основная информация о книге"),
+            {
+                "fields": [
+                    "title",
+                    "authors",
+                    "description",
+                    "contents",
+                ]
+            },
+        ),
+        (
+            _("Издание"),
+            {
+                "fields": [
+                    "publisher",
+                    "year",
+                    "pages",
+                    "isbn",
+                ]
+            },
+        ),
+        (
+            _("Метки"),
+            {
+                "fields": [
+                    "tags",
+                ]
+            },
+        ),
+        (
+            _("Файлы"),
+            {
+                "fields": [
+                    "cover_image",
+                    "file",
+                ]
+            },
+        ),
+        (
+            _("Куратор"),
+            {
+                "fields": [
+                    "user",
+                ]
+            },
+        ),
+        (
+            _("Время создания и изменения записи"),
+            {
+                "fields": [
+                    "created",
+                    "updated",
+                ]
+            },
+        ),
     ]
 
 
