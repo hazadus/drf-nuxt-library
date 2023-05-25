@@ -31,16 +31,58 @@ class PublisherAdmin(admin.ModelAdmin):
     ]
 
 
+class AuthorAdminForm(forms.ModelForm):
+    class Meta:
+        model = Author
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields[
+            "portrait"
+        ].widget.template_name = "books/widgets/author_portrait.html"
+
+
 @admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
     """
     Configures admin panel views for Author.
     """
 
-    model = Author
+    form = AuthorAdminForm
     list_display = [
         "full_name",
         "user",
+    ]
+    fieldsets = [
+        (
+            _("Имя автора"),
+            {
+                "fields": [
+                    "last_name",
+                    "first_name",
+                    "middle_name",
+                ]
+            },
+        ),
+        (
+            _("Информация об авторе"),
+            {
+                "fields": [
+                    "description",
+                    "portrait",
+                ]
+            },
+        ),
+        (
+            _("Куратор"),
+            {
+                "fields": [
+                    "user",
+                ]
+            },
+        ),
     ]
 
 
@@ -63,7 +105,6 @@ class BookAdmin(admin.ModelAdmin):
     Configures admin panel views for Book.
     """
 
-    # model = Book
     form = BookAdminForm
     list_display = [
         "title",
