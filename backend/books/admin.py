@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib import admin
+from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from .models import Tag, Publisher, Author, Book, Note, BookCard, List, ListItem
@@ -52,8 +54,14 @@ class AuthorAdmin(admin.ModelAdmin):
 
     form = AuthorAdminForm
     list_display = [
+        "portrait_preview",
         "full_name",
+        "has_description",
         "user",
+    ]
+    list_display_links = [
+        "portrait_preview",
+        "full_name",
     ]
     fieldsets = [
         (
@@ -85,6 +93,26 @@ class AuthorAdmin(admin.ModelAdmin):
         ),
     ]
 
+    def portrait_preview(self, obj: Author) -> str:
+        if obj.portrait:
+            return mark_safe(
+                render_to_string(
+                    "books/widgets/author_portrait_preview.html",
+                    {
+                        "author": obj,
+                    },
+                )
+            )
+        return ""
+
+    portrait_preview.short_description = _("Портрет")
+
+    def has_description(self, obj: Author) -> bool:
+        return bool(obj.description)
+
+    has_description.short_description = _("Есть описание")
+    has_description.boolean = True
+
 
 class BookAdminForm(forms.ModelForm):
     class Meta:
@@ -107,11 +135,16 @@ class BookAdmin(admin.ModelAdmin):
 
     form = BookAdminForm
     list_display = [
+        "cover_preview",
         "title",
         "publisher",
         "user",
         "year",
         "created",
+    ]
+    list_display_links = [
+        "cover_preview",
+        "title",
     ]
     readonly_fields = [
         "created",
@@ -175,6 +208,20 @@ class BookAdmin(admin.ModelAdmin):
             },
         ),
     ]
+
+    def cover_preview(self, obj: Book) -> str:
+        if obj.cover_image:
+            return mark_safe(
+                render_to_string(
+                    "books/widgets/book_cover_image_preview.html",
+                    {
+                        "book": obj,
+                    },
+                )
+            )
+        return ""
+
+    cover_preview.short_description = _("Обложка")
 
 
 @admin.register(Note)
