@@ -3,7 +3,7 @@
 __pycache__/
 staticfiles/
 htmlcov/
-media/
+media*/
 .coverage
 db.sqlite3
 .DS_Store

@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFit, SmartResize
+from ordered_model.models import OrderedModel
 
 
 class Tag(models.Model):
@@ -369,7 +370,7 @@ class List(models.Model):
         return self.title
 
 
-class ListItem(models.Model):
+class ListItem(OrderedModel):
     """
     Represents an item of the user-created book list.
     """
@@ -380,6 +381,7 @@ class ListItem(models.Model):
         on_delete=models.CASCADE,
         related_name="items",
     )
+    # TODO: remove field `position`
     position = models.IntegerField(
         verbose_name=_("номер в списке"),
         default=1,
@@ -400,13 +402,13 @@ class ListItem(models.Model):
     updated = models.DateTimeField(verbose_name=_("изменена"), auto_now=True)
 
     class Meta:
-        ordering = ["list", "position"]
+        ordering = ["order"]
         verbose_name = _("элемент списка")
         verbose_name_plural = _("элементы списков")
 
     def __str__(self):
         return "#{position} в {list_title} - {book_title}".format(
-            position=self.position,
+            position=self.order,
             list_title=self.list.title,
             book_title=self.book.title,
         )

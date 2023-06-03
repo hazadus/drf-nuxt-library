@@ -4,6 +4,12 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
+from ordered_model.admin import (
+    OrderedTabularInline,
+    OrderedInlineModelAdminMixin,
+    OrderedModelAdmin,
+)
+
 from .models import Tag, Publisher, Author, Book, Note, BookCard, List, ListItem
 
 
@@ -264,13 +270,26 @@ class BookCardAdmin(admin.ModelAdmin):
     ]
 
 
-class ListItemInline(admin.TabularInline):
+class ListItemInline(OrderedTabularInline):
     model = ListItem
+    fields = [
+        "book",
+        "description",
+        "order",
+        "move_up_down_links",
+    ]
+    readonly_fields = [
+        "order",
+        "move_up_down_links",
+    ]
+    ordering = [
+        "order",
+    ]
     extra = 0
 
 
 @admin.register(List)
-class ListAdmin(admin.ModelAdmin):
+class ListAdmin(OrderedInlineModelAdminMixin, admin.ModelAdmin):
     """
     Configures admin views for List.
     """
@@ -290,7 +309,7 @@ class ListAdmin(admin.ModelAdmin):
 
 
 @admin.register(ListItem)
-class ListItemAdmin(admin.ModelAdmin):
+class ListItemAdmin(OrderedModelAdmin):
     """
     Configures admin views for ListItem.
     """
@@ -300,6 +319,8 @@ class ListItemAdmin(admin.ModelAdmin):
         "position",
         "book",
         "list",
+        "order",
+        "move_up_down_links",
         "created",
     ]
     readonly_fields = [

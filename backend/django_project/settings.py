@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "djoser",
     "imagekit",
     "debug_toolbar",
+    "ordered_model",
     # Local apps
     "users.apps.UsersConfig",
     "books.apps.BooksConfig",
