@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      postgres:
+      library-db:
         image: postgres:13
         env:
           POSTGRES_HOST_AUTH_METHOD: trust
