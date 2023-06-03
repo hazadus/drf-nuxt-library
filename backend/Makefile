@@ -7,3 +7,8 @@ REMOTE_DIR = /root/drf-nuxt-library/
 
 backup:
 	rsync -arv --exclude=.venv --exclude=.git --exclude=__pycache__ --exclude=staticfiles $(REMOTE_USER)@$(REMOTE_IP):$(REMOTE_DIR) $(FULL_PATH)
+upd:
+	docker compose up -d --build
+test:
+	docker exec library-api coverage run --source='.' -m manage test
+	docker exec library-api coverage html
