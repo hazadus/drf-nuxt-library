@@ -30,6 +30,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r backend/requirements.txt
     - name: Run migrations
-      run: python manage.py backend/migrate
+      run: |
+        cd backend
+        python manage.py migrate
     - name: Run tests
-      run: python manage.py backend/test
+      run: |
+        cd backend
+        python manage.py test
