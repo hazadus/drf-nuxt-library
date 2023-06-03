@@ -1,5 +1,7 @@
 # drf-nuxt-library
 
+[![Django Tests](https://github.com/hazadus/drf-nuxt-library/actions/workflows/django_tests.yml/badge.svg)](https://github.com/hazadus/drf-nuxt-library/actions/workflows/django_tests.yml)
+
 Приложение для ведения учета книг в домашней библиотеке, разработано по заказу жены.
 
 Проект работает по адресу: http://library.hazadus.ru/.
@@ -37,3 +39,15 @@
 | DEBUG      | `True` для режима разработки.                                                                                                                                                                                                     |
 | FRONTEND_URL | На каком адресе будет работать фронтенд.<br/> Для использования фронтенда из контейнера Node, прописываем `http://localhost`.<br/> Для использования фронтенда, запущенного `npm run dev`, устанавливаем `http://localhost:3000`. |
 | NUXT_PUBLIC_API_BASE | При работе API из контейнера, оставляем `http://localhost`.<br/> Эта переменная используется в модуле `useApi.ts` фронтенда для построения URL API.                                                                               |
+
+### Запуск тестов
+
+```bash
+cd backend
+make upd
+make test
+```
+
+### Интересные материалы, использованные при разработке
+
+- [GitHub Actions in action - Setting up Django and Postgres](https://www.hacksoft.io/blog/github-actions-in-action-setting-up-django-and-postgres)

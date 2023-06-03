@@ -1,6 +1,7 @@
 ## 03.05.2023, Сб
 
 - 23:20 - Backend: сконфигурирован `coverage`.
+- 23:55 - Backend: added GitHub Action to run Django tests on push.
 
 ## 25.05.2023, Чт
 
