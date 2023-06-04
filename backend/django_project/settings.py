@@ -19,7 +19,7 @@ env.read_env()
 
 SECRET_KEY = env.str("SECRET_KEY")
 DEBUG = env.bool("DEBUG", False)
-GITHUB_WORKFLOW = env.bool("GITHUB_WORKFLOW", False)
+GITHUB_WORKFLOW = True if env.str("GITHUB_WORKFLOW", "") else False
 FRONTEND_URL = env.str("FRONTEND_URL", "http://localhost:3000")
 BACKEND_HOST = env.str("BACKEND_HOST", "library.hazadus.ru")
 
