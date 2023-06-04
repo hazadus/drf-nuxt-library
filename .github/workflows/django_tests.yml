@@ -32,14 +32,14 @@ jobs:
     - name: Run migrations
       env:
         SECRET_KEY: "secret-key-for-test-purposes-only"
-        GITHUB_WORFLOW: true
+        GITHUB_WORFLOW: True
       run: |
         cd backend
         python manage.py migrate
     - name: Run tests
       env:
         SECRET_KEY: "secret-key-for-test-purposes-only"
-        GITHUB_WORFLOW: true
+        GITHUB_WORFLOW: True
       run: |
         cd backend
         python manage.py test
