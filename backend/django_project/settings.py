@@ -19,6 +19,7 @@ env.read_env()
 
 SECRET_KEY = env.str("SECRET_KEY")
 DEBUG = env.bool("DEBUG", False)
+GITHUB_WORKFLOW = env.bool("GITHUB_WORKFLOW", False)
 FRONTEND_URL = env.str("FRONTEND_URL", "http://localhost:3000")
 BACKEND_HOST = env.str("BACKEND_HOST", "library.hazadus.ru")
 
@@ -112,7 +113,7 @@ DATABASES = {
     }
 }
 
-if os.environ.get("GITHUB_WORKFLOW"):
+if GITHUB_WORKFLOW:
     DATABASES["default"]["HOST"] = "127.0.0.1"
 
 

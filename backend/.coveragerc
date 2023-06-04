@@ -17,6 +17,7 @@ exclude_lines =
     # Have to re-enable the standard pragma
     pragma: no cover
     if DEBUG:
+    if GITHUB_WORKFLOW:
     if not DEBUG:
     except ImportError
     if __name__ == "__main__":
