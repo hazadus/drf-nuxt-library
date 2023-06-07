@@ -51,3 +51,4 @@ make test
 ### Интересные материалы, использованные при разработке
 
 - [GitHub Actions in action - Setting up Django and Postgres](https://www.hacksoft.io/blog/github-actions-in-action-setting-up-django-and-postgres)
+- [Loading Django Fixtures in Tests](https://realpython.com/django-pytest-fixtures/#loading-django-fixtures-in-tests)
