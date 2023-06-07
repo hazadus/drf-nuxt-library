@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from django.urls import reverse
 
 from ordered_model.admin import (
     OrderedTabularInline,
@@ -274,7 +275,6 @@ class ListItemInline(OrderedTabularInline):
     model = ListItem
     fields = [
         "book",
-        "description",
         "order",
         "move_up_down_links",
     ]
@@ -286,6 +286,35 @@ class ListItemInline(OrderedTabularInline):
         "order",
     ]
     extra = 0
+
+    def move_up_down_links(self, obj):
+        """
+        Override `move_up_down_links` to properly show up/down links on `ListAdmin` page.
+        """
+        # `ListItem`'s "parent" object `pk` (`List` consists of `ListItem`'s).
+        order_obj_name = str(obj.list.pk)
+        model_info = self._get_model_info()
+
+        name = "{admin_name}:{app}_{parent_model}_{model}_change_order_inline".format(
+            admin_name=self.admin_site.name, **model_info
+        )
+
+        return render_to_string(
+            "ordered_model/admin/order_controls.html",
+            {
+                "app_label": model_info["app"],
+                "model_name": model_info["model"],
+                "module_name": model_info["model"],  # backwards compat
+                "object_id": obj.pk,
+                "urls": {
+                    "up": reverse(name, args=[order_obj_name, obj.pk, "up"]),
+                    "down": reverse(name, args=[order_obj_name, obj.pk, "down"]),
+                    "top": reverse(name, args=[order_obj_name, obj.pk, "top"]),
+                    "bottom": reverse(name, args=[order_obj_name, obj.pk, "bottom"]),
+                },
+                "query_string": self.request_query_string,
+            },
+        )
 
 
 @admin.register(List)
@@ -316,7 +345,6 @@ class ListItemAdmin(OrderedModelAdmin):
 
     model = ListItem
     list_display = [
-        "position",
         "book",
         "list",
         "order",
@@ -326,4 +354,8 @@ class ListItemAdmin(OrderedModelAdmin):
     readonly_fields = [
         "created",
         "updated",
+    ]
+    ordering = [
+        "list",
+        "order",
     ]

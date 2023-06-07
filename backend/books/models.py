@@ -381,11 +381,6 @@ class ListItem(OrderedModel):
         on_delete=models.CASCADE,
         related_name="items",
     )
-    # TODO: remove field `position`
-    position = models.IntegerField(
-        verbose_name=_("номер в списке"),
-        default=1,
-    )
     book = models.ForeignKey(
         verbose_name=_("книга"),
         to=Book,
@@ -401,14 +396,19 @@ class ListItem(OrderedModel):
     created = models.DateTimeField(verbose_name=_("создана"), auto_now_add=True)
     updated = models.DateTimeField(verbose_name=_("изменена"), auto_now=True)
 
-    class Meta:
+    # NB: `order` field is added by `OrderedModel`!
+    #
+    # This is to properly set order of `ListItem`'s within `List`s:
+    order_with_respect_to = "list"
+
+    class Meta(OrderedModel.Meta):
         ordering = ["order"]
         verbose_name = _("элемент списка")
         verbose_name_plural = _("элементы списков")
 
     def __str__(self):
-        return "#{position} в {list_title} - {book_title}".format(
-            position=self.order,
+        return "#{order} в {list_title} - {book_title}".format(
+            order=self.order,
             list_title=self.list.title,
             book_title=self.book.title,
         )
