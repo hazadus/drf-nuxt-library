@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFit, SmartResize
+from ordered_model.models import OrderedModel
 
 
 class Tag(models.Model):
@@ -369,7 +370,7 @@ class List(models.Model):
         return self.title
 
 
-class ListItem(models.Model):
+class ListItem(OrderedModel):
     """
     Represents an item of the user-created book list.
     """
@@ -379,10 +380,6 @@ class ListItem(models.Model):
         to=List,
         on_delete=models.CASCADE,
         related_name="items",
-    )
-    position = models.IntegerField(
-        verbose_name=_("номер в списке"),
-        default=1,
     )
     book = models.ForeignKey(
         verbose_name=_("книга"),
@@ -399,14 +396,19 @@ class ListItem(models.Model):
     created = models.DateTimeField(verbose_name=_("создана"), auto_now_add=True)
     updated = models.DateTimeField(verbose_name=_("изменена"), auto_now=True)
 
-    class Meta:
-        ordering = ["list", "position"]
+    # NB: `order` field is added by `OrderedModel`!
+    #
+    # This is to properly set order of `ListItem`'s within `List`s:
+    order_with_respect_to = "list"
+
+    class Meta(OrderedModel.Meta):
+        ordering = ["order"]
         verbose_name = _("элемент списка")
         verbose_name_plural = _("элементы списков")
 
     def __str__(self):
-        return "#{position} в {list_title} - {book_title}".format(
-            position=self.position,
+        return "#{order} в {list_title} - {book_title}".format(
+            order=self.order,
             list_title=self.list.title,
             book_title=self.book.title,
         )

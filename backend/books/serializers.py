@@ -262,7 +262,7 @@ class ListItemDetailSerializer(serializers.ModelSerializer):
         model = ListItem
         fields = [
             "id",
-            "position",
+            "order",
             "book",
             "description",
             "created",
@@ -281,7 +281,7 @@ class ListItemListSerializer(serializers.ModelSerializer):
         model = ListItem
         fields = [
             "id",
-            "position",
+            "order",
             "book",
             "description",
             "created",
