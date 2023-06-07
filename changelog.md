@@ -4,7 +4,8 @@
   Django. Из модели `ListItem` убрано поле `position`. NB: после обновления и миграции на сервере, запустить также 
   для первичной нумерации в списках: `python -m manage reorder_model books.ListItem`.
 - 18:00 - Backend: к проекту добавлены фикстуры БД для тестов API `books` на реальных данных.
-- 20:00 - Backend: добавлены тесты для `BookDetailView`.
+- 20:00 - Backend: добавлены тесты для `BookListView`.
+- 21:20 - Backend: добавлены тесты для `BookDetailView`.
 
 ## 05.06.2023, Пн
 
