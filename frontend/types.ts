@@ -82,7 +82,7 @@ export interface AuthToken {
 export interface BookListItem {
   // This corresponds to `ListItemDetailSerializer`
   id: ID;
-  position: number;
+  order: number;
   book: Book;
   description: string;
   created: Date;
