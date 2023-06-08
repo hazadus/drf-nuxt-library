@@ -40,5 +40,4 @@ jobs:
         SECRET_KEY: "secret-key-for-test-purposes-only"
       run: |
         cd backend
-      # Note that we exclude some tests which are failing without media files ("noci" tag).
         python manage.py test --exclude-tag=noci
