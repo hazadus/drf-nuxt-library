@@ -16,7 +16,7 @@ from users.models import CustomUser
 
 class BooksAPITest(APITestCase):
     """
-    Test `books` app DRF API.
+    Test `books/` app DRF API endpoint.
     """
 
     username = "testuser"
@@ -57,6 +57,7 @@ class BooksAPITest(APITestCase):
     def test_book_list_api(self):
         """
         Ensure that `BookListView`:
+
         - is located at expected URL;
         - return paginated result with expected number of books in one page;
         - return serialized `Book` data as expected from `BookListSerializer`;
@@ -212,6 +213,7 @@ class BooksAPITest(APITestCase):
     def test_book_detail_api(self):
         """
         Ensure that `BookDetailView` endpoint:
+
         - is located where expected;
         - return full and correct data for every book in DB.
         """
@@ -343,7 +345,10 @@ class BooksAPITest(APITestCase):
 
     def test_book_create_with_min_data_api(self):
         """
-        Ensure that `BookCreateView` correctly create new book for authenticated user, from minimal proper data.
+        Ensure that `BookCreateView`:
+
+        - correctly creates new book with authenticated user set as author (using `CreateAsAuthenticatedUser` mixin);
+        - title and one author is enough to create a book instance.
         """
         url = "/api/v1/books/create/"
         book_title = "Test book"
@@ -360,6 +365,7 @@ class BooksAPITest(APITestCase):
         )
         book_data = json.loads(response.content)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(book_data["user"], self.new_user.pk)
         self.assertEqual(book_data["title"], book_title)
         self.assertEqual(book_data["authors"][0], author_instance.pk)
 

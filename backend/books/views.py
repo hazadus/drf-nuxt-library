@@ -56,7 +56,7 @@ class CreateAsAuthenticatedUser(CreateModelMixin):
 
     def create(self, request, *args, **kwargs):
         """
-        Create new Book / Author / Publisher / Tag, setting `user` field to authenticated user.
+        Create new Book / Author / Publisher / Note, setting `user` field to authenticated user.
         """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
