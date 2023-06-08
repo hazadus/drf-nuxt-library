@@ -1,7 +1,12 @@
+#
+# Tests for `books` endpoint.
+# Tests tagged "noci" are excluded when running tests in GutHub Actions (because of missing media files).
+#
 import json
 
 from django.db.models import Q
 from django.conf import settings
+from django.test import tag as tag_test
 from rest_framework.test import APITestCase
 from rest_framework import status
 
@@ -48,6 +53,7 @@ class BooksAPITest(APITestCase):
         """
         self.assertFalse(settings.DEBUG, msg="DEBUG mode should be off in tests!")
 
+    @tag_test("noci")
     def test_book_list_api(self):
         """
         Ensure that `BookListView`:
@@ -90,26 +96,22 @@ class BooksAPITest(APITestCase):
                 self.assertEqual(book["pages"], book_instance.pages)
 
                 if book_instance.cover_image:
-                    if not settings.GITHUB_ACTIONS:
-                        self.assertEqual(
-                            book["cover_image"], book_instance.cover_image.url
-                        )
-                        self.assertEqual(
-                            book["cover_thumbnail_small"],
-                            book_instance.cover_thumbnail_small.url,
-                        )
-                        self.assertEqual(
-                            book["cover_thumbnail_medium"],
-                            book_instance.cover_thumbnail_medium.url,
-                        )
-                        self.assertEqual(
-                            book["cover_thumbnail_large"],
-                            book_instance.cover_thumbnail_large.url,
-                        )
+                    self.assertEqual(book["cover_image"], book_instance.cover_image.url)
+                    self.assertEqual(
+                        book["cover_thumbnail_small"],
+                        book_instance.cover_thumbnail_small.url,
+                    )
+                    self.assertEqual(
+                        book["cover_thumbnail_medium"],
+                        book_instance.cover_thumbnail_medium.url,
+                    )
+                    self.assertEqual(
+                        book["cover_thumbnail_large"],
+                        book_instance.cover_thumbnail_large.url,
+                    )
 
-                if not settings.GITHUB_ACTIONS:
-                    if book_instance.file:
-                        self.assertEqual(book["file"], book_instance.file.url)
+                if book_instance.file:
+                    self.assertEqual(book["file"], book_instance.file.url)
 
                 self.assertEqual(
                     book["created"], book_instance.created.astimezone().isoformat()
@@ -125,19 +127,18 @@ class BooksAPITest(APITestCase):
                         book["user"]["username"], book_instance.user.username
                     )
                     if book_instance.user.profile_image:
-                        if not settings.GITHUB_ACTIONS:
-                            self.assertEqual(
-                                book["user"]["profile_image"],
-                                book_instance.user.profile_image.url,
-                            )
-                            self.assertEqual(
-                                book["user"]["profile_image_thumbnail_small"],
-                                book_instance.user.profile_image_thumbnail_small.url,
-                            )
-                            self.assertEqual(
-                                book["user"]["profile_image_thumbnail_large"],
-                                book_instance.user.profile_image_thumbnail_large.url,
-                            )
+                        self.assertEqual(
+                            book["user"]["profile_image"],
+                            book_instance.user.profile_image.url,
+                        )
+                        self.assertEqual(
+                            book["user"]["profile_image_thumbnail_small"],
+                            book_instance.user.profile_image_thumbnail_small.url,
+                        )
+                        self.assertEqual(
+                            book["user"]["profile_image_thumbnail_large"],
+                            book_instance.user.profile_image_thumbnail_large.url,
+                        )
 
                 # `authors`:
                 for author in book["authors"]:
@@ -165,6 +166,7 @@ class BooksAPITest(APITestCase):
                     if tag_instance.user:
                         self.assertEqual(tag["user"], tag_instance.user.pk)
 
+    @tag_test("noci")
     def test_book_list_with_query_api(self):
         """
         Check that `BookListView` endpoint with `?query=` parameter return exact same result as we get from DB.
@@ -206,6 +208,7 @@ class BooksAPITest(APITestCase):
                     book_instance = Book.objects.get(pk=book["id"])
                     self.assertTrue(book_instance in queryset.all())
 
+    @tag_test("noci")
     def test_book_detail_api(self):
         """
         Ensure that `BookDetailView` endpoint:
@@ -230,24 +233,22 @@ class BooksAPITest(APITestCase):
             self.assertEqual(book["contents"], book_instance.contents)
 
             if book_instance.cover_image:
-                if not settings.GITHUB_ACTIONS:
-                    self.assertEqual(book["cover_image"], book_instance.cover_image.url)
-                    self.assertEqual(
-                        book["cover_thumbnail_small"],
-                        book_instance.cover_thumbnail_small.url,
-                    )
-                    self.assertEqual(
-                        book["cover_thumbnail_medium"],
-                        book_instance.cover_thumbnail_medium.url,
-                    )
-                    self.assertEqual(
-                        book["cover_thumbnail_large"],
-                        book_instance.cover_thumbnail_large.url,
-                    )
+                self.assertEqual(book["cover_image"], book_instance.cover_image.url)
+                self.assertEqual(
+                    book["cover_thumbnail_small"],
+                    book_instance.cover_thumbnail_small.url,
+                )
+                self.assertEqual(
+                    book["cover_thumbnail_medium"],
+                    book_instance.cover_thumbnail_medium.url,
+                )
+                self.assertEqual(
+                    book["cover_thumbnail_large"],
+                    book_instance.cover_thumbnail_large.url,
+                )
 
             if book_instance.file:
-                if not settings.GITHUB_ACTIONS:
-                    self.assertEqual(book["file"], book_instance.file.url)
+                self.assertEqual(book["file"], book_instance.file.url)
 
             self.assertEqual(
                 book["created"], book_instance.created.astimezone().isoformat()
@@ -262,19 +263,18 @@ class BooksAPITest(APITestCase):
                 self.assertEqual(book["user"]["username"], book_instance.user.username)
 
                 if book_instance.user.profile_image:
-                    if not settings.GITHUB_ACTIONS:
-                        self.assertEqual(
-                            book["user"]["profile_image"],
-                            book_instance.user.profile_image.url,
-                        )
-                        self.assertEqual(
-                            book["user"]["profile_image_thumbnail_small"],
-                            book_instance.user.profile_image_thumbnail_small.url,
-                        )
-                        self.assertEqual(
-                            book["user"]["profile_image_thumbnail_large"],
-                            book_instance.user.profile_image_thumbnail_large.url,
-                        )
+                    self.assertEqual(
+                        book["user"]["profile_image"],
+                        book_instance.user.profile_image.url,
+                    )
+                    self.assertEqual(
+                        book["user"]["profile_image_thumbnail_small"],
+                        book_instance.user.profile_image_thumbnail_small.url,
+                    )
+                    self.assertEqual(
+                        book["user"]["profile_image_thumbnail_large"],
+                        book_instance.user.profile_image_thumbnail_large.url,
+                    )
 
             # `authors`:
             for author in book["authors"]:
@@ -292,29 +292,25 @@ class BooksAPITest(APITestCase):
                         book["user"]["username"], book_instance.user.username
                     )
                     if author_instance.user.profile_image:
-                        if not settings.GITHUB_ACTIONS:
-                            self.assertEqual(
-                                author["user"]["profile_image"],
-                                author_instance.user.profile_image.url,
-                            )
-                            self.assertEqual(
-                                author["user"]["profile_image_thumbnail_small"],
-                                author_instance.user.profile_image_thumbnail_small.url,
-                            )
-                            self.assertEqual(
-                                author["user"]["profile_image_thumbnail_large"],
-                                author_instance.user.profile_image_thumbnail_large.url,
-                            )
+                        self.assertEqual(
+                            author["user"]["profile_image"],
+                            author_instance.user.profile_image.url,
+                        )
+                        self.assertEqual(
+                            author["user"]["profile_image_thumbnail_small"],
+                            author_instance.user.profile_image_thumbnail_small.url,
+                        )
+                        self.assertEqual(
+                            author["user"]["profile_image_thumbnail_large"],
+                            author_instance.user.profile_image_thumbnail_large.url,
+                        )
 
                 if author_instance.portrait:
-                    if not settings.GITHUB_ACTIONS:
-                        self.assertEqual(
-                            author["portrait"], author_instance.portrait.url
-                        )
-                        self.assertEqual(
-                            author["portrait_thumbnail"],
-                            author_instance.portrait_thumbnail.url,
-                        )
+                    self.assertEqual(author["portrait"], author_instance.portrait.url)
+                    self.assertEqual(
+                        author["portrait_thumbnail"],
+                        author_instance.portrait_thumbnail.url,
+                    )
 
             # `publisher`:
             if book_instance.publisher:
