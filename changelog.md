@@ -1,6 +1,7 @@
 ## 09.06.2023, Пт
 
 - 09:00 - Backend: добавлены тесты для `PublisherListView`, `PublisherDetailView`.
+- 11:20 - Backend: добавлены тесты для `AuthorListView`, `AuthorCreateView`, `AuthorDetailView`.
 
 ## 08.06.2023, Чт
 
