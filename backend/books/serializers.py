@@ -36,6 +36,7 @@ class PublisherDetailSerializer(serializers.ModelSerializer):
         model = Publisher
         fields = [
             "id",
+            "user",
             "title",
         ]
 

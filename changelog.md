@@ -1,3 +1,7 @@
+## 09.06.2023, Пт
+
+- 09:00 - Backend: добавлены тесты для `PublisherListView`, `PublisherDetailView`.
+
 ## 08.06.2023, Чт
 
 - 21:00 - Backend: добавлены тесты для `BookCreateView`. Тесты адаптированы под запуск в GitHub Actions.
