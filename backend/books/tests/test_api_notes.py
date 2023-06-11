@@ -26,3 +26,17 @@ class NotesAPITest(BaseAPITest):
         )
         authors = json.loads(response.content)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_notes_list_with_auth_api(self):
+        """
+        Ensure that `NoteListView` with auth:
+
+        - return `HTTP_200_OK`
+        """
+        url = "/api/v1/notes/"
+        response = self.client.get(
+            url,
+            **{"HTTP_AUTHORIZATION": "Token " + self.auth_token},
+        )
+        authors = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
