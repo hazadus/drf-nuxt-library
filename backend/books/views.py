@@ -260,7 +260,8 @@ class NoteCreateView(CreateAsAuthenticatedUser, CreateAPIView):
 
 class NoteDetailView(RetrieveUpdateDestroyAPIView):
     """
-    Retrieve / update / delete Note view.
+    Retrieve / partial update / delete Note view.
+    Only allow to retrieve, update and delete notes created by authenticated user.
     """
 
     authentication_classes = [authentication.TokenAuthentication]
@@ -268,6 +269,34 @@ class NoteDetailView(RetrieveUpdateDestroyAPIView):
 
     queryset = Note.objects.all()
     serializer_class = NoteDetailSerializer
+
+    def get(self, request, *args, **kwargs):
+        """
+        Only allow to retrieve notes created by authenticated user.
+        """
+        instance: Note = self.get_object()
+        if instance.user == request.user:
+            return self.retrieve(request, *args, **kwargs)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def patch(self, request, *args, **kwargs):
+        """
+        Partial update.
+        Only allow to update notes created by authenticated user.
+        """
+        instance: Note = self.get_object()
+        if instance.user == request.user:
+            return self.partial_update(request, *args, **kwargs)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def delete(self, request, *args, **kwargs):
+        """
+        Only allow to delete notes created by authenticated user.
+        """
+        instance: Note = self.get_object()
+        if instance.user == request.user:
+            return self.destroy(request, *args, **kwargs)
+        return Response(status=status.HTTP_403_FORBIDDEN)
 
 
 class ListListView(ListAPIView):
