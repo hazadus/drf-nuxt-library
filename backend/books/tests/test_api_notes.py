@@ -45,7 +45,8 @@ class NotesAPITest(BaseAPITest):
         """
         Ensure that `NoteListView` with auth:
 
-        - return `HTTP_200_OK`
+        - return `HTTP_200_OK`;
+        - return all Notes created by authenticated user (check by count).
         """
         url = "/api/v1/notes/"
         response = self.client.get(
@@ -57,6 +58,27 @@ class NotesAPITest(BaseAPITest):
         self.assertEqual(
             len(notes),
             Note.objects.filter(user_id=self.new_user.pk).count(),
+        )
+
+    def test_notes_list_with_auth_and_book_id_api(self):
+        """
+        Ensure that `NoteListView` with auth and `?book_id=` GET parameter:
+
+        - return `HTTP_200_OK`;
+        - return all Notes created by authenticated user (check by count) for book with id `book_id`.
+        """
+        url = f"/api/v1/notes/?book_id={self.note.book.pk}"
+        response = self.client.get(
+            url,
+            **{"HTTP_AUTHORIZATION": "Token " + self.auth_token},
+        )
+        notes = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            len(notes),
+            Note.objects.filter(
+                user_id=self.new_user.pk, book_id__exact=self.note.book.pk
+            ).count(),
         )
 
     def test_notes_create_api(self):

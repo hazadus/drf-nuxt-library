@@ -1,3 +1,7 @@
+## 14.06.2023, Ср
+
+- 20:00 - Backend: добавлен тест для `NoteListView`.
+
 ## 13.06.2023, Вт
 
 - 21:00 - Backend: добавлены тесты для `NoteCreateView`, `NoteDetailView`. Ограничен доступ `NoteDetailView` только к
