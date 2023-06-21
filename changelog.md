@@ -1,3 +1,16 @@
+## 21.06.2023, Ср
+
+- 21:00 - Backend: доработаны `_check_list_serialized_data`, `_check_detail_serialized_data`. Проверки правильности сериализации данных порефакторены в базовый класс `BaseAPITest`.
+
+## 15.06.2023, Чт
+
+- 21:00 - Backend: добавлены тесты для `ListDetailView`. Total code coverage 99%.
+
+## 14.06.2023, Ср
+
+- 20:00 - Backend: добавлен тест для `NoteListView`.
+- 21:00 - Backend: добавлены тесты для `ListListView`.
+
 ## 13.06.2023, Вт
 
 - 21:00 - Backend: добавлены тесты для `NoteCreateView`, `NoteDetailView`. Ограничен доступ `NoteDetailView` только к
