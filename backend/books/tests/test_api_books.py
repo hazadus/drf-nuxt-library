@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.test import tag as tag_test
 from rest_framework import status
 
-from books.models import Book, Author, Publisher, Tag
+from books.models import Book, Author, Tag
 
 from .base_api_test_case import BaseAPITest
 
@@ -53,84 +53,9 @@ class BooksAPITest(BaseAPITest):
             for book in list_page["results"]:
                 book_instance = Book.objects.get(pk=book["id"])
 
-                #
-                # Ensure `BookListSerializer` return all the data we expect, and the data is correct
-                #
-                self.assertEqual(book["id"], book_instance.id)
-                self.assertEqual(book["title"], book_instance.title)
-                self.assertEqual(book["year"], book_instance.year)
-                self.assertEqual(book["pages"], book_instance.pages)
-
-                if book_instance.cover_image:
-                    self.assertEqual(book["cover_image"], book_instance.cover_image.url)
-                    self.assertEqual(
-                        book["cover_thumbnail_small"],
-                        book_instance.cover_thumbnail_small.url,
-                    )
-                    self.assertEqual(
-                        book["cover_thumbnail_medium"],
-                        book_instance.cover_thumbnail_medium.url,
-                    )
-                    self.assertEqual(
-                        book["cover_thumbnail_large"],
-                        book_instance.cover_thumbnail_large.url,
-                    )
-
-                if book_instance.file:
-                    self.assertEqual(book["file"], book_instance.file.url)
-
-                self.assertEqual(
-                    book["created"], book_instance.created.astimezone().isoformat()
+                self.check_book_list_serialized_data(
+                    book_data=book, book_instance=book_instance
                 )
-                self.assertEqual(
-                    book["updated"], book_instance.updated.astimezone().isoformat()
-                )
-
-                # `user`:
-                if book_instance.user:
-                    self.assertEqual(book["user"]["id"], book_instance.user.pk)
-                    self.assertEqual(
-                        book["user"]["username"], book_instance.user.username
-                    )
-                    if book_instance.user.profile_image:
-                        self.assertEqual(
-                            book["user"]["profile_image"],
-                            book_instance.user.profile_image.url,
-                        )
-                        self.assertEqual(
-                            book["user"]["profile_image_thumbnail_small"],
-                            book_instance.user.profile_image_thumbnail_small.url,
-                        )
-                        self.assertEqual(
-                            book["user"]["profile_image_thumbnail_large"],
-                            book_instance.user.profile_image_thumbnail_large.url,
-                        )
-
-                # `authors`:
-                for author in book["authors"]:
-                    author_instance = Author.objects.get(pk=author["id"])
-                    self.assertEqual(author["id"], author_instance.pk)
-                    self.assertEqual(author["first_name"], author_instance.first_name)
-                    self.assertEqual(author["middle_name"], author_instance.middle_name)
-                    self.assertEqual(author["last_name"], author_instance.last_name)
-
-                # `publisher`:
-                if book["publisher"]:
-                    publisher_instance = Publisher.objects.get(
-                        pk=book["publisher"]["id"]
-                    )
-                    self.assertEqual(book["publisher"]["id"], publisher_instance.pk)
-                    self.assertEqual(
-                        book["publisher"]["title"], publisher_instance.title
-                    )
-
-                # `tags`:
-                for tag in book["tags"]:
-                    tag_instance = Tag.objects.get(pk=tag["id"])
-                    self.assertEqual(tag["id"], tag_instance.pk)
-                    self.assertEqual(tag["title"], tag_instance.title)
-                    if tag_instance.user:
-                        self.assertEqual(tag["user"], tag_instance.user.pk)
 
     @tag_test("noci")
     def test_book_list_with_query_api(self):
@@ -188,111 +113,12 @@ class BooksAPITest(BaseAPITest):
                 url,
             )
 
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
             book = json.loads(response.content)
 
-            self.assertEqual(book["id"], book_instance.pk)
-            self.assertEqual(book["title"], book_instance.title)
-            self.assertEqual(book["year"], book_instance.year)
-            self.assertEqual(book["pages"], book_instance.pages)
-            self.assertEqual(book["isbn"], book_instance.isbn)
-            self.assertEqual(book["description"], book_instance.description)
-            self.assertEqual(book["contents"], book_instance.contents)
-
-            if book_instance.cover_image:
-                self.assertEqual(book["cover_image"], book_instance.cover_image.url)
-                self.assertEqual(
-                    book["cover_thumbnail_small"],
-                    book_instance.cover_thumbnail_small.url,
-                )
-                self.assertEqual(
-                    book["cover_thumbnail_medium"],
-                    book_instance.cover_thumbnail_medium.url,
-                )
-                self.assertEqual(
-                    book["cover_thumbnail_large"],
-                    book_instance.cover_thumbnail_large.url,
-                )
-
-            if book_instance.file:
-                self.assertEqual(book["file"], book_instance.file.url)
-
-            self.assertEqual(
-                book["created"], book_instance.created.astimezone().isoformat()
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.check_book_detail_serialized_data(
+                book_data=book, book_instance=book_instance
             )
-            self.assertEqual(
-                book["updated"], book_instance.updated.astimezone().isoformat()
-            )
-
-            # `user`:
-            if book_instance.user:
-                self.assertEqual(book["user"]["id"], book_instance.user.pk)
-                self.assertEqual(book["user"]["username"], book_instance.user.username)
-
-                if book_instance.user.profile_image:
-                    self.assertEqual(
-                        book["user"]["profile_image"],
-                        book_instance.user.profile_image.url,
-                    )
-                    self.assertEqual(
-                        book["user"]["profile_image_thumbnail_small"],
-                        book_instance.user.profile_image_thumbnail_small.url,
-                    )
-                    self.assertEqual(
-                        book["user"]["profile_image_thumbnail_large"],
-                        book_instance.user.profile_image_thumbnail_large.url,
-                    )
-
-            # `authors`:
-            for author in book["authors"]:
-                author_instance = Author.objects.get(pk=author["id"])
-                self.assertEqual(author["id"], author_instance.pk)
-                self.assertEqual(author["first_name"], author_instance.first_name)
-                self.assertEqual(author["middle_name"], author_instance.middle_name)
-                self.assertEqual(author["last_name"], author_instance.last_name)
-                self.assertEqual(author["description"], author_instance.description)
-
-                # `user` of `author`:
-                if author_instance.user:
-                    self.assertEqual(book["user"]["id"], book_instance.user.pk)
-                    self.assertEqual(
-                        book["user"]["username"], book_instance.user.username
-                    )
-                    if author_instance.user.profile_image:
-                        self.assertEqual(
-                            author["user"]["profile_image"],
-                            author_instance.user.profile_image.url,
-                        )
-                        self.assertEqual(
-                            author["user"]["profile_image_thumbnail_small"],
-                            author_instance.user.profile_image_thumbnail_small.url,
-                        )
-                        self.assertEqual(
-                            author["user"]["profile_image_thumbnail_large"],
-                            author_instance.user.profile_image_thumbnail_large.url,
-                        )
-
-                if author_instance.portrait:
-                    self.assertEqual(author["portrait"], author_instance.portrait.url)
-                    self.assertEqual(
-                        author["portrait_thumbnail"],
-                        author_instance.portrait_thumbnail.url,
-                    )
-
-            # `publisher`:
-            if book_instance.publisher:
-                self.assertEqual(book["publisher"]["id"], book_instance.publisher.pk)
-                self.assertEqual(
-                    book["publisher"]["title"], book_instance.publisher.title
-                )
-
-            # `tags`:
-            for tag in book["tags"]:
-                tag_instance = Tag.objects.get(pk=tag["id"])
-                self.assertEqual(tag["id"], tag_instance.pk)
-                self.assertEqual(tag["title"], tag_instance.title)
-                if tag_instance.user:
-                    self.assertEqual(tag["user"], tag_instance.user.pk)
 
     def test_book_create_fails_when_unauthorized(self):
         """
