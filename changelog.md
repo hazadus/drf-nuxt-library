@@ -1,3 +1,7 @@
+## 02.07.2023, Вс
+
+- 16:30 - Backend: добавлен GET-параметр `?book_id=...` к `/api/v1/lists/` + тесты.
+
 ## 21.06.2023, Ср
 
 - 21:00 - Backend: доработаны `_check_list_serialized_data`, `_check_detail_serialized_data`. Проверки правильности сериализации данных порефакторены в базовый класс `BaseAPITest`.

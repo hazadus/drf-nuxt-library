@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.test import tag as tag_test
 from rest_framework import status
 
-from books.models import List
+from books.models import List, Book
 
 from .base_api_test_case import BaseAPITest
 
@@ -60,6 +60,28 @@ class ListsAPITest(BaseAPITest):
             self.check_list_serialized_data(list_data, list_instance)
 
     @tag_test("noci")
+    def test_lists_list_without_auth_with_bookid_api(self):
+        """
+        Ensure that `ListListView` without auth, with `?book_id=...`:
+
+        - return `HTTP_200_OK`;
+        - return correct public lists with this book included.
+        """
+        url = f"/api/v1/lists/?book_id={1}"
+        response = self.client.get(
+            url,
+        )
+
+        list_instances = List.objects.filter(items__book_id__exact=1, is_public=True)
+        lists = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            len(lists),
+            list_instances.count(),
+        )
+
+    @tag_test("noci")
     def test_lists_list_with_auth_api(self):
         """
         Ensure that `ListListView`:
@@ -87,6 +109,37 @@ class ListsAPITest(BaseAPITest):
         for list_data in lists:
             list_instance = List.objects.get(pk=list_data["id"])
             self.check_list_serialized_data(list_data, list_instance)
+
+    @tag_test("noci")
+    def test_lists_list_with_auth_with_bookid_api(self):
+        """
+        Ensure that `ListListView` with auth, with `?book_id=...`:
+
+        - return `HTTP_200_OK`;
+        - return correct public and user's lists with this book included.
+        """
+        book_id = 1
+        url = f"/api/v1/lists/?book_id={book_id}"
+        response = self.client.get(
+            url,
+            **{"HTTP_AUTHORIZATION": "Token " + self.auth_token},
+        )
+
+        list_instances = List.objects.filter(
+            Q(is_public=True) | Q(user_id=self.new_user.pk)
+        )
+        list_instances = list_instances.filter(
+            items__book_id__in=[
+                book_id,
+            ]
+        )
+        lists = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            len(lists),
+            list_instances.count(),
+        )
 
     @tag_test("noci")
     def test_lists_detail_public_without_auth_api(self):
