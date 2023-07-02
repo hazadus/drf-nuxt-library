@@ -4,7 +4,7 @@
 */
 import { useAuthStore } from '@/stores/AuthStore';
 import { getMediaUrl } from "@/useApi";
-import { useBookDetailsPageUrl, useBookNotesPageUrl } from "@/urls";
+import { useBookDetailsPageUrl, useBookNotesPageUrl, useBookListsPageUrl } from "@/urls";
 import type { Book } from '@/types';
 
 const authStore = useAuthStore();
@@ -21,7 +21,7 @@ defineProps({
   <div class="box">
     <div class="columns">
       <div class="column is-10">
-        <h3 class="header is-size-3">
+        <h3 class="header is-size-3 mb-2" style="line-height: 2.5rem;">
           <NuxtLink :to="useBookDetailsPageUrl(book.id as number)">
             {{ book.title }}
           </NuxtLink>
@@ -51,14 +51,34 @@ defineProps({
           </NuxtLink>
         </template>
 
-        <NuxtLink v-if="authStore.isAuthenticated" :to="useBookNotesPageUrl(book.id as number)"
-          class="button is-small mr-2">
-          Заметки
+        <NuxtLink :to="useBookDetailsPageUrl(book.id as number)" class="button is-small mr-2">
+          <span class="mr-2">
+            <Icon name="mdi:book" />
+          </span>
+          <span>
+            Сведения
+          </span>
         </NuxtLink>
 
-        <NuxtLink :to="useBookDetailsPageUrl(book.id as number)" class="button is-small">
-          Сведения
+        <NuxtLink v-if="authStore.isAuthenticated" :to="useBookNotesPageUrl(book.id as number)"
+          class="button is-small mr-2">
+          <span class="mr-3">
+            <Icon name="mdi:notes" />
+          </span>
+          <span>
+            Заметки
+          </span>
         </NuxtLink>
+
+        <NuxtLink :to="useBookListsPageUrl(book.id as number)" class="button is-small">
+          <span class="mr-2">
+            <Icon name="mdi:format-list-group" />
+          </span>
+          <span>
+            Списки
+          </span>
+        </NuxtLink>
+
       </div>
       <div class="column is-2">
         <figure v-if="book.cover_thumbnail_large" class="image is-2by3">

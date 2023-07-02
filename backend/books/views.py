@@ -310,6 +310,7 @@ class ListListView(ListAPIView):
     def get_queryset(self) -> QuerySet:
         """
         Filter QuerySet - only public lists or lists created by authenticated user.
+        Use `?book_id` GET parameter to filter lists only with the book.
         """
         queryset = (
             List.objects.all()
@@ -328,6 +329,15 @@ class ListListView(ListAPIView):
             )
         else:
             queryset = queryset.filter(is_public=True)
+
+        book_id = self.request.query_params.get("book_id", "")
+
+        if book_id:
+            queryset = queryset.filter(
+                items__book_id__in=[
+                    book_id,
+                ]
+            )
 
         return queryset
 

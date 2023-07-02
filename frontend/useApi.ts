@@ -208,6 +208,13 @@ export async function fetchBookList(listId: ID | string) {
   return await get<BookList>(`/lists/${listId}/`);
 }
 
+export async function fetchBookListsWithBook(bookId: ID | string) {
+  // Get book Lists including book with `bookId`.
+  const authStore = useAuthStore();
+  const { get } = useApi(undefined, "GET", authStore.token);
+  return await get<BookList[]>(`/lists/?book_id=${bookId}`);
+}
+
 /************************************************************************************************************
  *  Login and User API
  *************************************************************************************************************/
