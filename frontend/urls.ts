@@ -10,6 +10,11 @@ export function useBookNotesPageUrl(bookId: ID | string) {
   return `/books/${bookId}/notes/`;
 }
 
+export function useBookListsPageUrl(bookId: ID | string) {
+  // Return URL for Book lists page.
+  return `/books/${bookId}/lists/`;
+}
+
 export function useBookListDetailPageUrl(listId: ID | string) {
   // Return URL for Book List detail page.
   return `/lists/${listId}/details/`;

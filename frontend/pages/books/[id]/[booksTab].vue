@@ -11,7 +11,7 @@ const route = useRoute();
 const book: Ref<Book | null> = ref(null);
 
 const tabName: string = route.params.booksTab as string;
-const allowableTabNames = ["details", "notes",];
+const allowableTabNames = ["details", "notes", "lists",];
 
 if (!allowableTabNames.includes(tabName)) {
   throw createError({
@@ -74,7 +74,7 @@ if (bookError.value?.statusCode === 404) {
   <template v-else-if="book">
     <div class="columns is-vcentered mb-0">
       <div class="column is-10">
-        <h2 class="header is-size-2">
+        <h2 class="header is-size-2 mb-2" style="line-height: 2.5rem;">
           {{ book.title }}
         </h2>
 
@@ -134,12 +134,23 @@ if (bookError.value?.statusCode === 404) {
                 </span>
               </NuxtLink>
             </li>
+            <li :class="tabName === 'lists' ? 'is-active' : ''">
+              <NuxtLink :to="`/books/${book.id}/lists/`">
+                <span>
+                  <Icon name="mdi:format-list-group" />
+                </span>
+                <span>
+                  Списки
+                </span>
+              </NuxtLink>
+            </li>
           </ul>
         </div>
 
         <!-- Tab content -->
         <BookDetailsTab v-if="tabName == 'details'" :book="book" />
         <BookNotesTab v-else-if="tabName == 'notes'" :bookId="(book.id as number)" />
+        <BookListsTab v-else-if="tabName == 'lists'" :bookId="(book.id as number)" />
 
       </div>
 

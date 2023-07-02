@@ -65,5 +65,14 @@
       <Icon name="logos:github-octocat" /><a
         href="https://github.com/hazadus/drf-nuxt-library">hazadus/drf-nuxt-library</a>.
     </p>
+
+    <p>
+      Планы по дальнейшему развитию проекта – см.
+      <a href="https://github.com/hazadus/drf-nuxt-library/issues">Issues на GitHub</a>.
+    </p>
+
+    <p>
+      Сайт разрабочика – <a href="https://hazadus.ru/">https://hazadus.ru</a>
+    </p>
   </div>
 </template>
