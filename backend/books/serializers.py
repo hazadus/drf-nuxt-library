@@ -8,6 +8,7 @@ SomeListSerializer or SomeMinimalSerializer - concise serializer.
 For simple models, only "detail" serializers are present.
 """
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from .models import Tag, Publisher, Author, Book, Note, List, ListItem
 from users.serializers import CustomUserMinimalSerializer
@@ -288,6 +289,45 @@ class ListItemListSerializer(serializers.ModelSerializer):
             "created",
             "updated",
         ]
+
+
+class ListItemCreateSerializer(serializers.ModelSerializer):
+    """
+    Used to create `ListItem`s.
+    """
+
+    class Meta:
+        model = ListItem
+        fields = [
+            "id",
+            "list",
+            "book",
+            "order",
+            "description",
+            "created",
+            "updated",
+        ]
+
+    def is_valid(self, *, raise_exception=False):
+        """
+        Do not allow adding the book to the same list more than once.
+        """
+        book_pk = self.initial_data.get("book")
+        list_pk = self.initial_data.get("list")
+        # Ensure that there's no `ListItem`s with these book and list already:
+        list_items = ListItem.objects.filter(
+            book=book_pk,
+            list=list_pk,
+        )
+
+        if list_items.count():
+            error = "Book pk={book} already added to the list pk={list}!".format(
+                book=book_pk,
+                list=list_pk,
+            )
+            raise ValidationError([error])
+
+        return super().is_valid()
 
 
 class ListListSerializer(serializers.ModelSerializer):

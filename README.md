@@ -21,6 +21,7 @@
   - `djoser`
   - `django-debug-toolbar`
   - `django-imagekit`
+  - `django-ordered-model` https://github.com/django-ordered-model/django-ordered-model
 - Frontend: **Nuxt 3**
   - `@vueuse/nuxt`
   - `nuxt-icon`

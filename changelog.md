@@ -1,3 +1,7 @@
+## 05.07.2023, Ср
+
+- 23:55 - Backend: создан enpoint `/api/v1/list_items/create/` + тесты.
+
 ## 02.07.2023, Вс
 
 - 16:30 - Backend: добавлен GET-параметр `?book_id=...` к `/api/v1/lists/` + тесты.

@@ -1,0 +1,109 @@
+#
+# Tests for `list_items/` endpoint.
+# Tests tagged "noci" are excluded when running tests in GutHub Actions (because of missing media files).
+#
+import json
+
+from django.db.models import Q
+from django.test import tag as tag_test
+from rest_framework import status
+
+from books.models import List, Book, ListItem
+
+from .base_api_test_case import BaseAPITest
+
+
+class ListItemsAPITest(BaseAPITest):
+    """
+    Test `list_items/` DRF API endpoint.
+    """
+
+    def test_list_items_create_with_auth_api(self):
+        """
+        Ensure that `ListItemCreateView`:
+
+        - correctly creates new `ListItem` in auth'd user's List when correct data posted;
+        - returns `HTTP_201_CREATED` and expected serialized data.
+        """
+        book_instance = Book.objects.first()
+        list_instance = List.objects.create(
+            user=self.new_user,
+            title="New Test List",
+            description="Description of the New Test List",
+            is_public=True,
+        )
+
+        url = "/api/v1/list_items/create/"
+        response = self.client.post(
+            url,
+            {
+                "book": book_instance.pk,
+                "list": list_instance.pk,
+                "description": "Test ListItem",
+            },
+            **{"HTTP_AUTHORIZATION": "Token " + self.auth_token},
+        )
+
+        list_item_data = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(list_item_data["list"], list_instance.pk)
+        self.assertEqual(list_item_data["book"], book_instance.pk)
+        self.assertEqual(list_item_data["order"], 0)
+        self.assertEqual(list_item_data["description"], "Test ListItem")
+
+    def test_list_items_create_fails_with_other_users_list_api(self):
+        """
+        Ensure that `ListItemCreateView`:
+
+        - fails to create new `ListItem` in other user's List;
+        - return `HTTP_403_FORBIDDEN`.
+        """
+        book_instance = Book.objects.first()
+        list_instance = List.objects.filter(user_id__exact=1).first()
+
+        url = "/api/v1/list_items/create/"
+        response = self.client.post(
+            url,
+            {
+                "book": book_instance.pk,
+                "list": list_instance.pk,  # Other user's list
+                "description": "Test ListItem",
+            },
+            **{"HTTP_AUTHORIZATION": "Token " + self.auth_token},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_list_items_create_fails_adding_book_twice_api(self):
+        """
+        Ensure that `ListItemCreateView`:
+
+        - fails when trying to add book already present in the list;
+        - return `HTTP_400_BAD_REQUEST`
+        """
+        book_instance = Book.objects.first()
+        list_instance = List.objects.create(
+            user=self.new_user,
+            title="New Test List",
+            description="Description of the New Test List",
+            is_public=True,
+        )
+        ListItem.objects.create(
+            list=list_instance,
+            book=book_instance,
+        )
+
+        # Try to add the same book to the same list again...
+        url = "/api/v1/list_items/create/"
+        response = self.client.post(
+            url,
+            {
+                "book": book_instance.pk,
+                "list": list_instance.pk,
+                "description": "Test ListItem",
+            },
+            **{"HTTP_AUTHORIZATION": "Token " + self.auth_token},
+        )
+
+        list_item_data = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

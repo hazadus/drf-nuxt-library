@@ -25,8 +25,9 @@ from .serializers import (
     NoteDetailSerializer,
     ListListSerializer,
     ListDetailSerializer,
+    ListItemCreateSerializer,
 )
-from .models import Author, Book, Publisher, Note, List
+from .models import Author, Book, Publisher, Note, List, ListItem
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -382,4 +383,26 @@ class ListDetailView(RetrieveModelMixin, DestroyModelMixin, GenericAPIView):
         instance: List = self.get_object()
         if instance.user == request.user:
             return self.destroy(request, *args, **kwargs)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+
+class ListItemCreateView(CreateAPIView):
+    """
+    Create new `ListItem`.
+    """
+
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    queryset = ListItem.objects.all()
+    serializer_class = ListItemCreateSerializer
+
+    def create(self, request, *args, **kwargs):
+        """
+        Only allow auth'd user to add `ListItem`s to his own Lists.
+        """
+        list_pk = request.data.get("list")
+        list_instance = List.objects.get(pk=list_pk)
+        if list_instance.user == request.user:
+            return super().create(request, *args, **kwargs)
         return Response(status=status.HTTP_403_FORBIDDEN)
