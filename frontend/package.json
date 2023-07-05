@@ -15,6 +15,8 @@
     "nuxt-icon": "^0.3.3"
   },
   "dependencies": {
+    "@formkit/nuxt": "^0.17.4",
+    "@formkit/pro": "^0.112.7",
     "@pinia/nuxt": "^0.4.8",
     "@vueuse/nuxt": "^9.13.0",
     "bulma": "^0.9.4",

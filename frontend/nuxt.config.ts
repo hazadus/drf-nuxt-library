@@ -3,9 +3,10 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBase: "http://localhost",
+      formKitProKey: process.env.FORMKIT_PRO_KEY,
     },
   },
-  modules: ["@vueuse/nuxt", "nuxt-icon", "@pinia/nuxt", "@nuxt/content"],
+  modules: ["@vueuse/nuxt", "nuxt-icon", "@pinia/nuxt", "@nuxt/content", "@formkit/nuxt",],
   ssr: false,
   app: {
     head: {
