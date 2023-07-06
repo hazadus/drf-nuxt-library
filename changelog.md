@@ -1,3 +1,7 @@
+## 06.07.2023, Чт
+
+- 12:30 - Backend: добавлен параметр `/api/v1/lists/?only_own_lists=true`.
+
 ## 05.07.2023, Ср
 
 - 23:55 - Backend: создан enpoint `/api/v1/list_items/create/` + тесты.

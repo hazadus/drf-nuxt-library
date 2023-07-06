@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.test import tag as tag_test
 from rest_framework import status
 
-from books.models import List, Book
+from books.models import List
 
 from .base_api_test_case import BaseAPITest
 
@@ -133,6 +133,29 @@ class ListsAPITest(BaseAPITest):
                 book_id,
             ]
         )
+        lists = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            len(lists),
+            list_instances.count(),
+        )
+
+    @tag_test("noci")
+    def test_lists_list_with_auth_with_only_own_lists_api(self):
+        """
+        Ensure that `ListListView` with auth, with `?only_own_lists=true`:
+
+        - return `HTTP_200_OK`;
+        - return correct public and private user's lists (check bo count).
+        """
+        url = "/api/v1/lists/?only_own_lists=true"
+        response = self.client.get(
+            url,
+            **{"HTTP_AUTHORIZATION": "Token " + self.auth_token},
+        )
+
+        list_instances = List.objects.filter(user_id=self.new_user.pk)
         lists = json.loads(response.content)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
