@@ -25,8 +25,9 @@ from .serializers import (
     NoteDetailSerializer,
     ListListSerializer,
     ListDetailSerializer,
+    ListItemCreateSerializer,
 )
-from .models import Author, Book, Publisher, Note, List
+from .models import Author, Book, Publisher, Note, List, ListItem
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -309,8 +310,11 @@ class ListListView(ListAPIView):
 
     def get_queryset(self) -> QuerySet:
         """
-        Filter QuerySet - only public lists or lists created by authenticated user.
-        Use `?book_id` GET parameter to filter lists only with the book.
+        Filter QuerySet - only public lists or lists created by authenticated user (public and private).
+
+        GET parameters:
+        - `?book_id`: filter lists only with the book.
+        - `?only_own_lists=true`: get only auth'd user's lists (public and private!).
         """
         queryset = (
             List.objects.all()
@@ -324,9 +328,16 @@ class ListListView(ListAPIView):
         )
 
         if self.request.auth:
-            queryset = queryset.filter(
-                Q(is_public=True) | Q(user_id=self.request.user.id)
+            only_own_lists = (
+                True if self.request.query_params.get("only_own_lists") else False
             )
+
+            if only_own_lists:
+                queryset = queryset.filter(user_id=self.request.user.id)
+            else:
+                queryset = queryset.filter(
+                    Q(is_public=True) | Q(user_id=self.request.user.id)
+                )
         else:
             queryset = queryset.filter(is_public=True)
 
@@ -382,4 +393,26 @@ class ListDetailView(RetrieveModelMixin, DestroyModelMixin, GenericAPIView):
         instance: List = self.get_object()
         if instance.user == request.user:
             return self.destroy(request, *args, **kwargs)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+
+class ListItemCreateView(CreateAPIView):
+    """
+    Create new `ListItem`.
+    """
+
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    queryset = ListItem.objects.all()
+    serializer_class = ListItemCreateSerializer
+
+    def create(self, request, *args, **kwargs):
+        """
+        Only allow auth'd user to add `ListItem`s to his own Lists.
+        """
+        list_pk = request.data.get("list")
+        list_instance = List.objects.get(pk=list_pk)
+        if list_instance.user == request.user:
+            return super().create(request, *args, **kwargs)
         return Response(status=status.HTTP_403_FORBIDDEN)

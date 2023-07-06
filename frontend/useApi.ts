@@ -13,6 +13,7 @@ import type {
   User,
   AuthToken,
   BookList,
+  BookListItem,
 } from "@/types";
 
 export function getMediaUrl(relativeLink: string) {
@@ -213,6 +214,33 @@ export async function fetchBookListsWithBook(bookId: ID | string) {
   const authStore = useAuthStore();
   const { get } = useApi(undefined, "GET", authStore.token);
   return await get<BookList[]>(`/lists/?book_id=${bookId}`);
+}
+
+export async function fetchOnlyOwnBookLists() {
+  // Get all public and private lists created by authenticated user.
+  const authStore = useAuthStore();
+  const { get } = useApi(undefined, "GET", authStore.token);
+  return await get<BookList[]>("/lists/?only_own_lists=true");
+}
+
+/************************************************************************************************************
+ *  ListItem API
+ *************************************************************************************************************/
+
+export async function createNewListItem(
+  bookId: ID,
+  listId: ID,
+  description: string = "",
+) {
+  // Create new ListItem.
+  const authStore = useAuthStore();
+  const formData = {
+    book: bookId,
+    list: listId,
+    description: description,
+  };
+  const { get } = useApi(undefined, "POST", authStore.token, formData);
+  return await get<BookListItem>("/list_items/create/");
 }
 
 /************************************************************************************************************

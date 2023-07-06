@@ -14,6 +14,7 @@ from .views import (
     NoteDetailView,
     ListListView,
     ListDetailView,
+    ListItemCreateView,
 )
 
 urlpatterns = [
@@ -30,4 +31,5 @@ urlpatterns = [
     path("notes/<int:pk>/", NoteDetailView.as_view()),
     path("lists/", ListListView.as_view()),
     path("lists/<int:pk>/", ListDetailView.as_view()),
+    path("list_items/create/", ListItemCreateView.as_view()),
 ]
