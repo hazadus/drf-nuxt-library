@@ -291,9 +291,9 @@ class ListItemListSerializer(serializers.ModelSerializer):
         ]
 
 
-class ListItemCreateSerializer(serializers.ModelSerializer):
+class ListItemMinimalSerializer(serializers.ModelSerializer):
     """
-    Used to create `ListItem`s.
+    Used to create and delete `ListItem`s.
     """
 
     class Meta:
