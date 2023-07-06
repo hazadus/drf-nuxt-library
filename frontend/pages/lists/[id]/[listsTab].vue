@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/AuthStore';
-import { getMediaUrl, fetchBookList } from "@/useApi";
+import { getMediaUrl, fetchBookList, deleteListItem } from "@/useApi";
 import { useBookDetailsPageUrl, useBookListAdminPageUrl } from "@/urls";
 import { useFormatDateTime } from "@/utils";
-import type { BookList } from "@/types";
+import type { BookList, ID } from "@/types";
 
 const authStore = useAuthStore();
 const route = useRoute();
 
 const list: Ref<BookList | undefined> = ref(undefined);
 const errors: Ref<Object[]> = ref([]);
+const isFetching: Ref<boolean> = ref(false);
+const isDeleting: Ref<boolean> = ref(false);
 
 const totalPagesInList = computed(() => {
   let totalPages = 0;
@@ -21,10 +23,45 @@ const totalPagesInList = computed(() => {
   return totalPages;
 });
 
-const { data: listData, error: listFetchErrors } = await fetchBookList(route.params.id as string);
+const canRemoveBookFromList = computed(() => {
+  return authStore.user?.id == list.value?.user.id;
+});
 
-if (listFetchErrors.value) errors.value.push(listFetchErrors.value);
-if (listData.value) list.value = listData.value;
+const isRemoveBookButtonDisabled = computed(() => {
+  return isFetching.value || isDeleting.value;
+});
+
+async function fetchData() {
+  isFetching.value = true;
+
+  const { data: listData, error: listFetchErrors } = await fetchBookList(route.params.id as string);
+
+  if (listFetchErrors.value) {
+    errors.value.push(listFetchErrors.value);
+    isFetching.value = false;
+    return;
+  }
+
+  if (listData.value) list.value = listData.value;
+  isFetching.value = false;
+}
+
+async function onClickRemoveBookFromList(listItem: ID) {
+  isDeleting.value = true;
+
+  const { error: deleteErrors } = await deleteListItem(listItem);
+
+  if (deleteErrors.value) {
+    errors.value.push(deleteErrors.value);
+    isDeleting.value = false;
+    return;
+  }
+
+  await fetchData();
+  isDeleting.value = false;
+}
+
+fetchData();
 </script>
 
 <template>
@@ -98,6 +135,18 @@ if (listData.value) list.value = listData.value;
             </h6>
             <MarkdownStringRenderer :markdownString="item.book.description" />
           </BulmaNotification>
+
+          <div class="buttons">
+            <button v-if="canRemoveBookFromList" class="button is-warning" :disabled="isRemoveBookButtonDisabled"
+              @click.prevent="onClickRemoveBookFromList(item.id)">
+              <span class="mr-4">
+                <Icon name="tabler:book-off" />
+              </span>
+              <span>
+                Убрать из списка
+              </span>
+            </button>
+          </div>
         </div>
       </div>
     </article>

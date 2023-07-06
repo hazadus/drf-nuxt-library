@@ -58,7 +58,7 @@ async function onSubmit() {
     return;
   }
 
-  fetchData();
+  await fetchData();
   selectedListID.value = 0;
   isPosting.value = false;
 }
