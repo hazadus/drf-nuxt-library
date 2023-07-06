@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { fetchBookListsWithBook } from "@/useApi";
+import { fetchBookListsWithBook, fetchOnlyOwnBookLists, createNewListItem } from "@/useApi";
+import { useAuthStore } from "@/stores/AuthStore";
 import { useBookListDetailPageUrl } from "@/urls";
 import type { BookList } from '@/types';
 
@@ -10,23 +11,56 @@ const props = defineProps({
   },
 });
 
+const authStore = useAuthStore();
 const lists: Ref<BookList[]> = ref([]);
+const usersOwnLists: Ref<BookList[]> = ref([]);
 const isFetching: Ref<boolean> = ref(false);
+const isPosting: Ref<boolean> = ref(false);
 const fetchErrors: Ref<Object[]> = ref([]);
+const selectedListID: Ref<number> = ref(0);
+
+const usersOwnListsWithoutTheBook = computed(() => {
+  // Exclude lists already containing the book:
+  return usersOwnLists.value.filter((list) => {
+    return list.items.filter((listItem) => listItem.book.id == props.bookId).length == 0;
+  });
+});
+
+const isSubmitDisabled = computed(() => {
+  return isFetching.value || isPosting.value || selectedListID.value == 0;
+});
 
 async function fetchData() {
   isFetching.value = true;
+
   const { data: listsData, error: fetchListsError } = await fetchBookListsWithBook(props.bookId);
+  if (fetchListsError.value) fetchErrors.value.push(fetchListsError.value.data);
+  if (listsData.value) lists.value = listsData.value;
 
-  if (fetchListsError.value) {
-    fetchErrors.value.push(fetchListsError.value.data);
-  }
-
-  if (listsData.value) {
-    lists.value = listsData.value;
+  if (authStore.isAuthenticated) {
+    // Fetch authenticated user's public and private lists:
+    const { data: usersOwnListsData, error: fetchUsersOwnListsError } = await fetchOnlyOwnBookLists();
+    if (fetchUsersOwnListsError.value) fetchErrors.value.push(fetchUsersOwnListsError.value.data);
+    if (usersOwnListsData.value) usersOwnLists.value = usersOwnListsData.value;
   }
 
   isFetching.value = false;
+}
+
+async function onSubmit() {
+  isPosting.value = true;
+
+  const { error: postError } = await createNewListItem(props.bookId, selectedListID.value);
+
+  if (postError.value) {
+    fetchErrors.value.push(postError.value.data);
+    isPosting.value = false;
+    return;
+  }
+
+  fetchData();
+  selectedListID.value = 0;
+  isPosting.value = false;
 }
 
 fetchData();
@@ -94,5 +128,36 @@ fetchData();
     <BulmaNotification v-else type="warning">
       Пока нет списков, содержащих данную книгу.
     </BulmaNotification>
+
+    <template v-if="authStore.isAuthenticated">
+      <hr>
+
+      <h4 class="is-size-4 mb-2">
+        Добавить книгу в список
+      </h4>
+
+      <div v-if="usersOwnListsWithoutTheBook.length" class="field">
+        <label class="label">Список книг</label>
+        <div class="control">
+          <div class="select mr-2">
+            <select v-model="selectedListID" :disabled="isPosting">
+              <option value="0">
+                Выберите список
+              </option>
+              <option v-for="list in usersOwnListsWithoutTheBook" :value="list.id" :key="`opt-own-list-${list.id}`">
+                {{ list.title }}
+              </option>
+            </select>
+          </div>
+          <button @click.prevent="onSubmit" :disabled="isSubmitDisabled" class="button is-link"
+            :class="isPosting ? 'is-loading' : ''">
+            Добавить книгу
+          </button>
+        </div>
+      </div>
+      <BulmaNotification v-else type="warning">
+        Нет списков, в которые вы можете добавить данную книгу.
+      </BulmaNotification>
+    </template>
   </template>
 </template>
