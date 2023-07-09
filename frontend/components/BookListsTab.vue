@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { fetchBookListsWithBook, fetchOnlyOwnBookLists, createNewListItem } from "@/useApi";
+import { fetchBookListsWithBook, fetchOnlyOwnBookLists, createNewListItem, deleteListItem } from "@/useApi";
 import { useAuthStore } from "@/stores/AuthStore";
 import { useBookListDetailPageUrl } from "@/urls";
-import type { BookList } from '@/types';
+import type { BookList, BookListItem } from '@/types';
 
 const props = defineProps({
   bookId: {
@@ -16,6 +16,7 @@ const lists: Ref<BookList[]> = ref([]);
 const usersOwnLists: Ref<BookList[]> = ref([]);
 const isFetching: Ref<boolean> = ref(false);
 const isPosting: Ref<boolean> = ref(false);
+const isDeleting: Ref<boolean> = ref(false);
 const fetchErrors: Ref<Object[]> = ref([]);
 const selectedListID: Ref<number> = ref(0);
 
@@ -27,7 +28,11 @@ const usersOwnListsWithoutTheBook = computed(() => {
 });
 
 const isSubmitDisabled = computed(() => {
-  return isFetching.value || isPosting.value || selectedListID.value == 0;
+  return isFetching.value || isPosting.value || isDeleting.value || selectedListID.value == 0;
+});
+
+const isRemoveBookButtonDisabled = computed(() => {
+  return isFetching.value || isPosting.value || isDeleting.value;
 });
 
 async function fetchData() {
@@ -63,6 +68,24 @@ async function onSubmit() {
   isPosting.value = false;
 }
 
+async function onClickRemoveBookFromList(listToDeleteFrom: BookList) {
+  // Find corresponding `ListItem`:
+  const listItem: BookListItem = listToDeleteFrom.items.filter((item) => item.book.id == props.bookId)[0];
+
+  isDeleting.value = true;
+
+  const { error: deleteErrors } = await deleteListItem(listItem.id);
+
+  if (deleteErrors.value) {
+    fetchErrors.value.push(deleteErrors.value);
+    isDeleting.value = false;
+    return;
+  }
+
+  await fetchData();
+  isDeleting.value = false;
+}
+
 fetchData();
 </script>
 
@@ -91,13 +114,24 @@ fetchData();
     Книга входит в списки:
   </h4>
 
-  <template v-if="!isFetching">
+  <template v-if="lists">
     <template v-if="lists.length">
       <div class="card mb-2" v-for="list in lists" :key="`list-${list.id}`">
         <header class="card-header">
           <p class="card-header-title">
             {{ list.title }}
           </p>
+          <div class="buttons" v-if="authStore.user?.id == list.user.id">
+            <button class="button is-warning mr-2" @click.prevent="onClickRemoveBookFromList(list)"
+              :disabled="isRemoveBookButtonDisabled">
+              <span class="mr-4">
+                <Icon name="tabler:book-off" />
+              </span>
+              <span>
+                Убрать
+              </span>
+            </button>
+          </div>
         </header>
         <div class="card-content">
           <div class="content">
@@ -125,37 +159,41 @@ fetchData();
         </footer>
       </div>
     </template>
-    <BulmaNotification v-else type="warning">
-      Пока нет списков, содержащих данную книгу.
-    </BulmaNotification>
+    <template v-else>
+      <BulmaNotification v-if="!isFetching" type="warning">
+        Пока нет списков, содержащих данную книгу.
+      </BulmaNotification>
+    </template>
+  </template>
 
-    <template v-if="authStore.isAuthenticated">
-      <hr>
+  <template v-if="authStore.isAuthenticated">
+    <hr>
 
-      <h4 class="is-size-4 mb-2">
-        Добавить книгу в список
-      </h4>
+    <h4 class="is-size-4 mb-2">
+      Добавить книгу в список
+    </h4>
 
-      <div v-if="usersOwnListsWithoutTheBook.length" class="field">
-        <label class="label">Список книг</label>
-        <div class="control">
-          <div class="select mr-2">
-            <select v-model="selectedListID" :disabled="isPosting">
-              <option value="0">
-                Выберите список
-              </option>
-              <option v-for="list in usersOwnListsWithoutTheBook" :value="list.id" :key="`opt-own-list-${list.id}`">
-                {{ list.title }}
-              </option>
-            </select>
-          </div>
-          <button @click.prevent="onSubmit" :disabled="isSubmitDisabled" class="button is-link"
-            :class="isPosting ? 'is-loading' : ''">
-            Добавить книгу
-          </button>
+    <div v-if="usersOwnListsWithoutTheBook.length" class="field">
+      <label class="label">Список книг</label>
+      <div class="control">
+        <div class="select mr-2">
+          <select v-model="selectedListID" :disabled="isPosting">
+            <option value="0">
+              Выберите список
+            </option>
+            <option v-for="list in usersOwnListsWithoutTheBook" :value="list.id" :key="`opt-own-list-${list.id}`">
+              {{ list.title }}
+            </option>
+          </select>
         </div>
+        <button @click.prevent="onSubmit" :disabled="isSubmitDisabled" class="button is-link"
+          :class="isPosting ? 'is-loading' : ''">
+          Добавить книгу
+        </button>
       </div>
-      <BulmaNotification v-else type="warning">
+    </div>
+    <template v-else>
+      <BulmaNotification v-if="!isFetching" type="warning">
         Нет списков, в которые вы можете добавить данную книгу.
       </BulmaNotification>
     </template>
