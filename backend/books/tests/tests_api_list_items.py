@@ -4,8 +4,6 @@
 #
 import json
 
-from django.db.models import Q
-from django.test import tag as tag_test
 from rest_framework import status
 
 from books.models import List, Book, ListItem
@@ -107,3 +105,66 @@ class ListItemsAPITest(BaseAPITest):
 
         list_item_data = json.loads(response.content)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_list_items_detail_delete_with_auth_api(self):
+        """
+        Ensure that `ListItemDetailView`:
+
+        - return `HTTP_204_NO_CONTENT` when trying to DELETE ListItem from auth'd user's list;
+        - the ListItem actually gets deleted from database.
+        """
+        book_instance = Book.objects.first()
+        list_instance = List.objects.create(
+            user=self.new_user,
+            title="New Test List",
+            description="Description of the New Test List",
+            is_public=True,
+        )
+        list_item_instance = ListItem.objects.create(
+            list=list_instance,
+            book=book_instance,
+        )
+        list_item_pk = list_item_instance.pk
+        url = f"/api/v1/list_items/{list_item_pk}/"
+
+        response = self.client.delete(
+            url,
+            **{"HTTP_AUTHORIZATION": "Token " + self.auth_token},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(ListItem.objects.filter(pk=list_item_pk).count(), 0)
+
+    def test_list_items_detail_delete_fails_for_other_users_list_with_auth_api(self):
+        """
+        Ensure that `ListItemDetailView` with auth:
+
+        - return `HTTP_403_FORBIDDEN` when trying to DELETE ListItem from other than auth'd user's list.
+        """
+
+        # Get random ListItem - it will be from other user's list:
+        list_item_instance = ListItem.objects.first()
+        url = f"/api/v1/list_items/{list_item_instance.pk}/"
+
+        response = self.client.delete(
+            url,
+            **{"HTTP_AUTHORIZATION": "Token " + self.auth_token},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_list_items_detail_delete_fails_withot_auth_api(self):
+        """
+        Ensure that `ListItemDetailView` without auth:
+
+        - return `HTTP_401_UNAUTHORIZED` when trying to DELETE ListItem from list.
+        """
+
+        list_item_instance = ListItem.objects.first()
+        url = f"/api/v1/list_items/{list_item_instance.pk}/"
+
+        response = self.client.delete(
+            url,
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

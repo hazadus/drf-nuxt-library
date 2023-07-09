@@ -243,6 +243,13 @@ export async function createNewListItem(
   return await get<BookListItem>("/list_items/create/");
 }
 
+export async function deleteListItem(listItemId: ID) {
+  // Delete ListItem with `listItemId`.
+  const authStore = useAuthStore();
+  const { get } = useApi(undefined, "DELETE", authStore.token);
+  return await get<BookListItem>(`/list_items/${listItemId}/`);
+}
+
 /************************************************************************************************************
  *  Login and User API
  *************************************************************************************************************/

@@ -25,7 +25,7 @@ from .serializers import (
     NoteDetailSerializer,
     ListListSerializer,
     ListDetailSerializer,
-    ListItemCreateSerializer,
+    ListItemMinimalSerializer,
 )
 from .models import Author, Book, Publisher, Note, List, ListItem
 
@@ -405,7 +405,7 @@ class ListItemCreateView(CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     queryset = ListItem.objects.all()
-    serializer_class = ListItemCreateSerializer
+    serializer_class = ListItemMinimalSerializer
 
     def create(self, request, *args, **kwargs):
         """
@@ -415,4 +415,25 @@ class ListItemCreateView(CreateAPIView):
         list_instance = List.objects.get(pk=list_pk)
         if list_instance.user == request.user:
             return super().create(request, *args, **kwargs)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+
+class ListItemDetailView(DestroyModelMixin, GenericAPIView):
+    """
+    "Detail" `ListItem` view - for now only DELETE implemented.
+    """
+
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    queryset = ListItem.objects.all()
+    serializer_class = ListItemMinimalSerializer
+
+    def delete(self, request, *args, **kwargs):
+        """
+        Only allow List author to delete ListItem.
+        """
+        instance: ListItem = self.get_object()
+        if instance.list.user == request.user:
+            return self.destroy(request, *args, **kwargs)
         return Response(status=status.HTTP_403_FORBIDDEN)
