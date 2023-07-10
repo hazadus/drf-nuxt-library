@@ -98,17 +98,25 @@ if (bookError.value?.statusCode === 404) {
       </div>
 
       <div class="column is-2 has-text-centered">
-        <NuxtLink v-if="book.file && authStore.user?.is_staff" :to="getMediaUrl(book.file)" class="button is-success">
-          Читать
-        </NuxtLink>
+        <!-- "Read" / "Open in admin panel" links -->
+        <div v-if="authStore.user?.is_staff || authStore.user?.is_superuser" class="card">
+          <footer class="card-footer">
+            <NuxtLink v-if="book.file && authStore.user?.is_staff" :to="getMediaUrl(book.file)" class="card-footer-item">
+              <Icon name="fa6-solid:book-open-reader" />
+            </NuxtLink>
+            <a v-if="authStore.user?.is_superuser" :href="useBookAdminPageUrl(book.id as number)" target="_blank"
+              class="card-footer-item">
+              <Icon name="octicon:tools" />
+            </a>
+          </footer>
+        </div>
       </div>
     </div>
 
     <div class="columns">
       <div class="column is-10">
         <BulmaTagList class="mb-0 p-0">
-          <BulmaTag :tag="tag" v-for="tag in book.tags">
-          </BulmaTag>
+          <BulmaTag :tag="tag" v-for="tag in book.tags" :key="`tag-${tag.id}`" />
         </BulmaTagList>
 
         <!-- Tabs -->
@@ -159,11 +167,6 @@ if (bookError.value?.statusCode === 404) {
         <figure v-if="book.cover_thumbnail_large" class="image is-2by3 mb-2">
           <img :src="getMediaUrl(book.cover_thumbnail_large)">
         </figure>
-
-        <!-- Links -->
-        <a v-if="authStore.user?.is_superuser" :href="useBookAdminPageUrl(book.id as number)" target="_blank">
-          См. в админке
-        </a>
       </div>
     </div>
   </template>
