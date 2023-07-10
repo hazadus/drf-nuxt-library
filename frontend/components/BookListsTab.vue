@@ -70,20 +70,22 @@ async function onSubmit() {
 
 async function onClickRemoveBookFromList(listToDeleteFrom: BookList) {
   // Find corresponding `ListItem`:
-  const listItem: BookListItem = listToDeleteFrom.items.filter((item) => item.book.id == props.bookId)[0];
+  const listItem: BookListItem | undefined = listToDeleteFrom.items.find((item) => item.book.id == props.bookId);
 
-  isDeleting.value = true;
+  if (listItem) {
+    isDeleting.value = true;
 
-  const { error: deleteErrors } = await deleteListItem(listItem.id);
+    const { error: deleteErrors } = await deleteListItem(listItem.id);
 
-  if (deleteErrors.value) {
-    fetchErrors.value.push(deleteErrors.value);
+    if (deleteErrors.value) {
+      fetchErrors.value.push(deleteErrors.value);
+      isDeleting.value = false;
+      return;
+    }
+
+    await fetchData();
     isDeleting.value = false;
-    return;
   }
-
-  await fetchData();
-  isDeleting.value = false;
 }
 
 fetchData();

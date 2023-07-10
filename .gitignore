@@ -2,3 +2,4 @@
 docker/postgres*/
 docker-compose.yml
 *.log
+.DS_Store
