@@ -1,7 +1,7 @@
 # https://www.hacksoft.io/blog/github-actions-in-action-setting-up-django-and-postgres
 name: Django Tests
 
-on: [push]
+on: [pull_request, workflow_call]
 
 jobs:
   build:
