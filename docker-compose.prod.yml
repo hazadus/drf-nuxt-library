@@ -41,7 +41,7 @@ services:
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./backend/media:/media
       - ./backend/staticfiles:/staticfiles
-      - /etc/letsencrypt/archive/bookmarks.hazadus.ru/:/certs
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - api
       - node
